@@ -1,7 +1,7 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+  SDL port of x48
+  Copyright (C) 2011-2012 Daniel Roggen
+  Revision 1.0
 */
 /*
  *  This file is part of x48, an emulator of the HP-48sx Calculator.
@@ -104,13 +104,7 @@ ann_struct_t ann_tbl[] = {
 
 
 
-void
-#ifdef __FunctionProto__
-init_display(void)
-#else
-init_display()
-#endif
-{
+void init_display(void) {
   display.on = (int)(saturn.disp_io & 0x8) >> 3;
 
   display.disp_start = (saturn.disp_addr & 0xffffe);
@@ -130,7 +124,7 @@ init_display()
     display.nibs_per_line = (NIBBLES_PER_ROW+saturn.line_offset) & 0xfff;
 
   display.disp_end = display.disp_start +
-	             (display.nibs_per_line * (display.lines + 1));
+               (display.nibs_per_line * (display.lines + 1));
 
   display.menu_start = saturn.menu_addr;
   display.menu_end = saturn.menu_addr + 0x110;
@@ -145,45 +139,28 @@ init_display()
 
 }
 
-static inline void
-#ifdef __FunctionProto__
-draw_nibble(int c, int r, int val)
-#else
-draw_nibble(c, r, val)
-int c;
-int r;
-int val;
-#endif
-{
+static inline void draw_nibble(int c, int r, int val) {
   int x, y;
-  
+
 
   if (val != lcd_buffer[r][c]) {
     lcd_buffer[r][c] = val;
   }
-	///////////////////////////////////////////////
-  	// SDL PORT
-  	///////////////////////////////////////////////
-	x = (c * 4);					// x: start in pixels
-	if (r <= display.lines)
-		x -= disp.offset;			// Correct the pixels with display offset
-	y = r;							// y: start in pixels
-  	SDLDrawNibble(x,y,val);
+  ///////////////////////////////////////////////
+    // SDL PORT
+    ///////////////////////////////////////////////
+  x = (c * 4);					// x: start in pixels
+  if (r <= display.lines)
+    x -= disp.offset;			// Correct the pixels with display offset
+  y = r;							// y: start in pixels
+    SDLDrawNibble(x,y,val);
 
 }
 
-static inline void
-#ifdef __FunctionProto__
-draw_row(long addr, int row)
-#else
-draw_row(addr, row)
-long addr;
-int row;
-#endif
-{
+static inline void draw_row(long addr, int row) {
   int i, v;
   int line_length;
-  
+
 
   line_length = NIBBLES_PER_ROW;
   if ((display.offset > 3) && (row <= display.lines))
@@ -197,23 +174,17 @@ int row;
   }
 }
 
-void
-#ifdef __FunctionProto__
-update_display(void)
-#else
-update_display()
-#endif
-{
+void update_display(void) {
   int i, j;
   long addr;
   static int old_offset = -1;
   static int old_lines = -1;
 
 
-  	if (!disp.mapped)
-	{
+    if (!disp.mapped)
+  {
       //refresh_icon();
-		return;
+    return;
    }
   if (display.on) {
     addr = display.disp_start;
@@ -249,34 +220,20 @@ update_display()
         }
       }
   }
-  
+
 }
 
-void
-#ifdef __FunctionProto__
-redraw_display(void)
-#else
-redraw_display()
-#endif
-{
+void redraw_display(void) {
   memset(disp_buf, 0, sizeof(disp_buf));
   memset(lcd_buffer, 0, sizeof(lcd_buffer));
   update_display();
 }
 
-void
-#ifdef __FunctionProto__
-disp_draw_nibble(word_20 addr, word_4 val)
-#else
-disp_draw_nibble(addr, val)
-word_20 addr;
-word_4 val;
-#endif
-{
+void disp_draw_nibble(word_20 addr, word_4 val) {
   long offset;
   int x, y;
-  
-	
+
+
   offset = (addr - display.disp_start);
   x = offset % display.nibs_per_line;
   if (x < 0 || x > 35)
@@ -299,15 +256,7 @@ word_4 val;
   }
 }
 
-void
-#ifdef __FunctionProto__
-menu_draw_nibble(word_20 addr, word_4 val)
-#else
-menu_draw_nibble(addr, val)
-word_20 addr;
-word_4 val;
-#endif
-{
+void menu_draw_nibble(word_20 addr, word_4 val) {
   long offset;
   int x, y;
 
@@ -322,13 +271,7 @@ word_4 val;
 
 
 
-void
-#ifdef __FunctionProto__
-draw_annunc(void)
-#else
-draw_annunc()
-#endif
-{
+void draw_annunc(void) {
   int val;
   int i;
 
@@ -341,26 +284,18 @@ draw_annunc()
   ///////////////////////////////////////////////
   // SDL PORT
   ///////////////////////////////////////////////
-	char sdl_annuncstate[6];
-	for (i = 0; ann_tbl[i].bit; i++)
-	{
-		if ((ann_tbl[i].bit & val) == ann_tbl[i].bit)
-			sdl_annuncstate[i] = 1;
-		else
-			sdl_annuncstate[i] = 0;
-	}      	
+  char sdl_annuncstate[6];
+  for (i = 0; ann_tbl[i].bit; i++)
+  {
+    if ((ann_tbl[i].bit & val) == ann_tbl[i].bit)
+      sdl_annuncstate[i] = 1;
+    else
+      sdl_annuncstate[i] = 0;
+  }
   SDLDrawAnnunc(sdl_annuncstate);
 }
 
-void
-#ifdef __FunctionProto__
-redraw_annunc(void)
-#else
-redraw_annunc()
-#endif
-{
+void redraw_annunc(void) {
   last_annunc_state = -1;
   draw_annunc();
 }
-
-

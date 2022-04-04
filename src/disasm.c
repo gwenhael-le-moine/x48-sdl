@@ -269,15 +269,7 @@ static char *hst_bits[8] =
   (char*)"xm", (char*)"sb", (char*)"sr", (char*)"mp",
 };
 
-int
-#ifdef __FunctionProto__
-read_int (word_20 * addr, int n)
-#else
-read_int (addr, n)
-     word_20 *addr;
-     int n;
-#endif
-{
+int read_int (word_20 * addr, int n) {
   int i, t;
 
   for (i = 0, t = 0; i < n; i++)
@@ -285,28 +277,13 @@ read_int (addr, n)
   return t;
 }
 
-char *
-#ifdef __FunctionProto__
-append_str (char *buf, const char *str)
-#else
-append_str (buf, str)
-     char *buf;
-     const char *str;
-#endif
-{
+char * append_str (char *buf, const char *str) {
   while ((*buf = *str++))
     buf++;
   return buf;
 }
 
-char *
-#ifdef __FunctionProto__
-append_tab_16 (char *buf)
-#else
-append_tab_16 (buf)
-     char *buf;
-#endif
-{
+char * append_tab_16 (char *buf) {
   int n;
   char *p;
 
@@ -318,14 +295,7 @@ append_tab_16 (buf)
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-append_tab (char *buf)
-#else
-append_tab (buf)
-     char *buf;
-#endif
-{
+char * append_tab (char *buf) {
   int n;
   char *p;
 
@@ -337,29 +307,12 @@ append_tab (buf)
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-append_field (char *buf, word_4 fn)
-#else
-append_field (buf, fn)
-     char *buf;
-     word_4 fn;
-#endif
-{
+char * append_field (char *buf, word_4 fn) {
   buf = append_str (buf, field_tbl[fn + 16 * disassembler_mode]);
   return buf;
 }
 
-char *
-#ifdef __FunctionProto__
-append_imm_nibble (char *buf, word_20 * addr, int n)
-#else
-append_imm_nibble (buf, addr, n)
-     char *buf;
-     word_20 *addr;
-     int n;
-#endif
-{
+char * append_imm_nibble (char *buf, word_20 * addr, int n) {
   int i;
   char t[16];
 
@@ -387,15 +340,7 @@ append_imm_nibble (buf, addr, n)
   return buf;
 }
 
-char *
-#ifdef __FunctionProto__
-append_addr (char *buf, word_20 addr)
-#else
-append_addr (buf, addr)
-     char *buf;
-     word_20 addr;
-#endif
-{
+char * append_addr (char *buf, word_20 addr) {
   int shift;
   long mask;
 
@@ -409,18 +354,7 @@ append_addr (buf, addr)
   return buf;
 }
 
-char *
-#ifdef __FunctionProto__
-append_r_addr (char *buf, word_20 * pc, long disp, int n, int offset)
-#else
-append_r_addr (buf, pc, disp, n, offset)
-     char *buf;
-     word_20 *pc;
-     long disp;
-     int n;
-     int offset;
-#endif
-{
+char * append_r_addr (char *buf, word_20 * pc, long disp, int n, int offset) {
   long sign;
 
   sign = 1 << (n * 4 - 1);
@@ -463,15 +397,7 @@ append_r_addr (buf, pc, disp, n, offset)
   return buf;
 }
 
-char *
-#ifdef __FunctionProto__
-append_pc_comment (char *buf, word_20 pc)
-#else
-append_pc_comment (buf, pc)
-     char *buf;
-     word_20 pc;
-#endif
-{
+char * append_pc_comment (char *buf, word_20 pc) {
   char *p = buf;
 
   while (strlen (buf) < 4 * TAB_SKIP)
@@ -495,15 +421,7 @@ append_pc_comment (buf, pc)
 }
 
 
-char *
-#ifdef __FunctionProto__
-append_hst_bits (char *buf, int n)
-#else
-append_hst_bits (buf, n)
-     char *buf;
-     int n;
-#endif
-{
+char * append_hst_bits (char *buf, int n) {
   int i;
   char *p = buf;
 
@@ -542,15 +460,7 @@ append_hst_bits (buf, n)
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-disasm_1 (word_20 * addr, char *out)
-#else
-disasm_1 (addr, out)
-     word_20 *addr;
-     char *out;
-#endif
-{
+char * disasm_1 (word_20 * addr, char *out) {
   word_4 n;
   word_4 fn;
   char *p;
@@ -814,15 +724,7 @@ disasm_1 (addr, out)
 }
 
 
-char *
-#ifdef __FunctionProto__
-disasm_8 (word_20 * addr, char *out)
-#else
-disasm_8 (addr, out)
-     word_20 *addr;
-     char *out;
-#endif
-{
+char * disasm_8 (word_20 * addr, char *out) {
   word_4 n;
   word_4 fn;
   char *p = out;
@@ -1430,15 +1332,7 @@ disasm_8 (addr, out)
 }
 
 
-word_20
-#ifdef __FunctionProto__
-disassemble (word_20 addr, char *out)
-#else
-disassemble (addr, out)
-     word_20 addr;
-     char *out;
-#endif
-{
+word_20 disassemble (word_20 addr, char *out) {
   word_4 n;
   word_4 fn;
   char *p = out;

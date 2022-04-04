@@ -56,7 +56,7 @@
 #include <string.h>
 
 #include <stdio.h>
-#include <unistd.h>	
+#include <unistd.h>
 
 
 #include "resources.h"
@@ -78,13 +78,7 @@ int     resetOnStartup;
 char   romFileName[1024];
 char   homeDirectory[1024];
 
-void
-#ifdef __FunctionProto__
-get_resources(void)
-#else
-get_resources()
-#endif
-{/*
+void get_resources(void) {/*
   if (get_boolean_resource("printVersion", "PrintVersion"))
     show_version();
   if (get_boolean_resource("printCopyright", "PrintCopyright"))
@@ -92,7 +86,7 @@ get_resources()
   if (get_boolean_resource("printWarranty", "PrintWarranty"))
     show_warranty();*/
 
-  
+
   verbose = 0;
   quiet = 0;
   useTerminal = 1;
@@ -101,25 +95,25 @@ get_resources()
   //initialize=0;
   initialize=0;
   resetOnStartup=0;
-  
+
 	// There are two directories that can contain files:
 	// homeDirectory:		Directory in which the live files (hp state, ram, but also a copy of the rom) are stored
 	//							homeDirectory is the first directory in which x48 attempts to load the emulator data
 	//							It is also in homeDirectory that state files are saved
 	// romFileName:		if loading files from homeDirectory fails, the emulator instead initializes the state and ram from scratch, and attempts
 	//							to load the ROM romFileName. This is just for bootstrapping: afterwards then the emulator will save the state to homeDirectory
-	
+
 	// Have homeDirectory in the user's home
 #ifdef PLATFORMWEBOS
 	strcpy(homeDirectory,"/media/internal/hp48");
 #else
 	strcpy(homeDirectory,".hp48");				// live files are stored in ~/.hp48
 #endif
-	
-	
+
+
 
 	// As a fallback, assume that a ROM will be available at the same location as the executable
-	// We assume that the rom file is in the same 
+	// We assume that the rom file is in the same
 	int rv;
 	rv = readlink("/proc/self/exe", romFileName, sizeof(romFileName));	// Find the full path name of the executable (this is linux/cygwin only)
 	if(rv>0 && rv<sizeof(romFileName))
@@ -131,14 +125,14 @@ get_resources()
 		*slash=0;
 		// append the name of the rom file
 		strcat(romFileName,"/rom");
-		
+
 	}
 	else
 	{
 		// Couldn't find path to executable... just use some default
 		strcpy(romFileName,"rom.dump");
 	}
-	
+
 	printf("homeDirectory: %s\n",homeDirectory);
 	printf("romFileName: %s\n",romFileName);
 
@@ -146,7 +140,6 @@ get_resources()
 	disassembler_mode=CLASS_MNEMONICS; // HP_MNEMONICS
 	netbook=0;
 	throttle=0;
-  
-  
-}
 
+
+}

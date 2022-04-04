@@ -51,7 +51,6 @@
 #include "config.h"
 
 #define __ProtoType__(x) x
-#define __FunctionProto__ 1
 
 /*
  * If we are running Linux, `linux' will be defined by gcc.

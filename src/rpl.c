@@ -94,15 +94,7 @@ struct objfunc {
   { 0, 0, 0 }
 };
 
-char *
-#ifdef __FunctionProto__
-skip_ob(word_20 *addr, char *string)
-#else
-skip_ob(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * skip_ob(word_20 *addr, char *string) {
   word_20         size, type;
   char           *p = string;
   struct objfunc *op;
@@ -127,14 +119,7 @@ char    *string;
   return p;
 }
 
-long
-#ifdef __FunctionProto__
-hxs2real(long hxs)
-#else
-hxs2real(hxs)
-long hxs;
-#endif
-{
+long hxs2real(long hxs) {
   int n = 0, c = 1;
 
   while (hxs)
@@ -146,15 +131,7 @@ long hxs;
   return n;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_bin_int(word_20 *addr, char *string)
-#else
-dec_bin_int(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_bin_int(word_20 *addr, char *string) {
   char    *p = string;
   word_20  n = 0;
 
@@ -165,17 +142,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-real_number(word_20 *addr, char *string, int ml, int xl)
-#else
-real_number(addr, string, ml, xl)
-word_20 *addr;
-char    *string;
-int      ml;
-int      xl;
-#endif
-{
+char * real_number(word_20 *addr, char *string, int ml, int xl) {
   hp_real r;
   long    re, xs;
   int     i;
@@ -273,39 +240,15 @@ int      xl;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_real(word_20 *addr, char *string)
-#else
-dec_real(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_real(word_20 *addr, char *string) {
   return real_number(addr, string, 11, 3);
 }
 
-char *
-#ifdef __FunctionProto__
-dec_long_real(word_20 *addr, char *string)
-#else
-dec_long_real(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_long_real(word_20 *addr, char *string) {
   return real_number(addr, string, 14, 5);
 }
 
-char *
-#ifdef __FunctionProto__
-dec_complex(word_20 *addr, char *string)
-#else
-dec_complex(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_complex(word_20 *addr, char *string) {
   char *p = string;
 
   *p++ = '(';
@@ -317,15 +260,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_long_complex(word_20 *addr, char *string)
-#else
-dec_long_complex(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_long_complex(word_20 *addr, char *string) {
   char *p = string;
 
   *p++ = '(';
@@ -337,15 +272,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_string(word_20 *addr, char *string)
-#else
-dec_string(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_string(word_20 *addr, char *string) {
   word_20        len;
   unsigned char  c;
   char          *p = string;
@@ -386,15 +313,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_hex_string(word_20 *addr, char *string)
-#else
-dec_hex_string(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_hex_string(word_20 *addr, char *string) {
   int   len, lead, i, n;
   static char hex[] = "0123456789ABCDEF";
   char *p = string;
@@ -454,15 +373,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_list(word_20 *addr, char *string)
-#else
-dec_list(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_list(word_20 *addr, char *string) {
   word_20  semi;
   char    *p = string;
 
@@ -487,15 +398,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_symb(word_20 *addr, char *string)
-#else
-dec_symb(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_symb(word_20 *addr, char *string) {
   word_20  semi;
   char    *p = string;
 
@@ -518,15 +421,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_unit(word_20 *addr, char *string)
-#else
-dec_unit(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_unit(word_20 *addr, char *string) {
   word_20  semi;
   char    *p = string;
 
@@ -545,15 +440,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_unit_op(word_20 *addr, char *string)
-#else
-dec_unit_op(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_unit_op(word_20 *addr, char *string) {
   word_20 op;
   char *p = string;
 
@@ -582,15 +469,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_library(word_20 *addr, char *string)
-#else
-dec_library(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_library(word_20 *addr, char *string) {
   word_20        libsize, libidsize;
 /*
   word_20        hashoff, mesgoff, linkoff, cfgoff;
@@ -625,15 +504,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_library_data(word_20 *addr, char *string)
-#else
-dec_library_data(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_library_data(word_20 *addr, char *string) {
   word_20  size;
   char    *p = string;
 
@@ -648,15 +519,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_acptr(word_20 *addr, char *string)
-#else
-dec_acptr(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_acptr(word_20 *addr, char *string) {
   word_20  size;
   char    *p = string;
   int      i;
@@ -686,15 +549,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_prog(word_20 *addr, char *string)
-#else
-dec_prog(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_prog(word_20 *addr, char *string) {
   word_20  semi;
   char    *p = string;
 
@@ -713,15 +568,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_code(word_20 *addr, char *string)
-#else
-dec_code(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_code(word_20 *addr, char *string) {
   char    *p = string;
   word_20  n, len;
 
@@ -742,15 +589,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_local_ident(word_20 *addr, char *string)
-#else
-dec_local_ident(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_local_ident(word_20 *addr, char *string) {
   int           len, i, n;
   char         *p = string;
   unsigned char c;
@@ -786,15 +625,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_global_ident(word_20 *addr, char *string)
-#else
-dec_global_ident(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_global_ident(word_20 *addr, char *string) {
   int           len, i, n;
   char         *p = string;
   unsigned char c;
@@ -830,16 +661,7 @@ char    *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-xlib_name(int lib, int command, char *string)
-#else
-xlib_name(lib, command, string)
-int   lib;
-int   command;
-char *string;
-#endif
-{
+char * xlib_name(int lib, int command, char *string) {
   int           n, len;
   int		i, lib_n = 0;
   unsigned char c;
@@ -1016,15 +838,7 @@ char *string;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_xlib_name(word_20 *addr, char *string)
-#else
-dec_xlib_name(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_xlib_name(word_20 *addr, char *string) {
   int           lib, command;
 
   lib = read_nibbles(*addr, 3);
@@ -1035,16 +849,7 @@ char    *string;
   return xlib_name(lib, command, string);
 }
 
-char *
-#ifdef __FunctionProto__
-any_array(word_20 *addr, char *string, short lnk_flag)
-#else
-any_array(addr, string, lnk_flag)
-word_20 *addr;
-char    *string;
-short    lnk_flag;
-#endif
-{
+char * any_array(word_20 *addr, char *string, short lnk_flag) {
   word_20  len, type, dim;
   word_20 *dim_lens, *dims;
   word_20  array_addr, elem_addr;
@@ -1140,39 +945,15 @@ short    lnk_flag;
   return p;
 }
 
-char *
-#ifdef __FunctionProto__
-dec_array(word_20 *addr, char *string)
-#else
-dec_array(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_array(word_20 *addr, char *string) {
   return any_array(addr, string, 0);
 }
 
-char *
-#ifdef __FunctionProto__
-dec_lnk_array(word_20 *addr, char *string)
-#else
-dec_lnk_array(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_lnk_array(word_20 *addr, char *string) {
   return any_array(addr, string, 1);
 }
 
-char *
-#ifdef __FunctionProto__
-dec_char(word_20 *addr, char *string)
-#else
-dec_char(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_char(word_20 *addr, char *string) {
   char *p = string;
   unsigned char c;
 
@@ -1193,15 +974,7 @@ char    *string;
   return p;
 }
 
-short
-#ifdef __FunctionProto__
-check_xlib(word_20 addr, char *string)
-#else
-check_xlib(addr, string)
-word_20  addr;
-char    *string;
-#endif
-{
+short check_xlib(word_20 addr, char *string) {
   int           n, lib, command;
   word_20	romptab;
   word_20	offset, link_end;
@@ -1354,15 +1127,7 @@ fflush(stderr);
 }
 
 
-char *
-#ifdef __FunctionProto__
-dec_rpl_obj(word_20 *addr, char *string)
-#else
-dec_rpl_obj(addr, string)
-word_20 *addr;
-char    *string;
-#endif
-{
+char * dec_rpl_obj(word_20 *addr, char *string) {
   word_20   prolog = 0;
   word_20   prolog_2;
   char           *p = string;
@@ -1406,16 +1171,7 @@ char    *string;
   return p;
 }
 
-void
-#ifdef __FunctionProto__
-decode_rpl_obj_2(word_20 addr, char *typ, char *dat)
-#else
-decode_rpl_obj_2(addr, typ, dat)
-word_20  addr;
-char    *typ;
-char    *dat;
-#endif
-{
+void decode_rpl_obj_2(word_20 addr, char *typ, char *dat) {
   word_20   prolog = 0;
   int             len;
   char      tmp_str[80];
@@ -1478,15 +1234,7 @@ char    *dat;
   return;
 }
 
-char *
-#ifdef __FunctionProto__
-decode_rpl_obj(word_20 addr, char *buf)
-#else
-decode_rpl_obj(addr, buf)
-word_20  addr;
-char    *buf;
-#endif
-{
+char * decode_rpl_obj(word_20 addr, char *buf) {
   word_20   prolog = 0;
   int             len;
   char           *p = buf;

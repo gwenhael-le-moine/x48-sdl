@@ -1,10 +1,10 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+  SDL port of x48
+  Copyright (C) 2011-2012 Daniel Roggen
+  Revision 1.0
 */
 /*
-	Applied a patch of SVN revision 13 to avoid arrows and backspace repeating at full speed.
+  Applied a patch of SVN revision 13 to avoid arrows and backspace repeating at full speed.
 */
 /*
  *  This file is part of x48, an emulator of the HP-48sx Calculator.
@@ -107,13 +107,7 @@ int             first_press = 1;			// PATCH
 int		conf_bank1 = 0x00000;
 int		conf_bank2 = 0x00000;
 
-void
-#ifdef __FunctionProto__
-do_in(void)
-#else
-do_in()
-#endif
-{
+void do_in(void) {
   int i, in, out;
 
   out = 0;
@@ -133,9 +127,9 @@ do_in()
   // PAS TERRIBLE VISIBLEMENT
 
   if ( saturn.PC == 0x00E31 && !first_press &&
-       ( (out & 0x10 && in & 0x1 ) ||             // keys are Backspace 
-         (out & 0x40 && in & 0x7 ) ||             // right, left & down 
-         (out & 0x80 && in & 0x2 ) ) )            // up arrows          
+       ( (out & 0x10 && in & 0x1 ) ||             // keys are Backspace
+         (out & 0x40 && in & 0x7 ) ||             // right, left & down
+         (out & 0x80 && in & 0x2 ) ) )            // up arrows
   {
     for (i = 0; i < 9; i++)
       if (out & (1 << i))
@@ -153,47 +147,19 @@ do_in()
   }
 }
 
-void
-#ifdef __FunctionProto__
-clear_program_stat(int n)
-#else
-clear_program_stat(n)
-int n;
-#endif
-{
+void clear_program_stat(int n) {
   saturn.PSTAT[n] = 0;
 }
 
-void
-#ifdef __FunctionProto__
-set_program_stat(int n)
-#else
-set_program_stat(n)
-int n;
-#endif
-{
+void set_program_stat(int n) {
   saturn.PSTAT[n] = 1;
 }
 
-int
-#ifdef __FunctionProto__
-get_program_stat(int n)
-#else
-get_program_stat(n)
-int n;
-#endif
-{
+int get_program_stat(int n) {
   return saturn.PSTAT[n];
 }
 
-void
-#ifdef __FunctionProto__
-register_to_status(unsigned char *r)
-#else
-register_to_status(r)
-unsigned char *r;
-#endif
-{
+void register_to_status(unsigned char *r) {
   int i;
 
   for (i = 0; i < 12; i++) {
@@ -201,14 +167,7 @@ unsigned char *r;
   }
 }
 
-void
-#ifdef __FunctionProto__
-status_to_register(unsigned char *r)
-#else
-status_to_register(r)
-unsigned char *r;
-#endif
-{
+void status_to_register(unsigned char *r) {
   int i;
 
   for (i = 0; i < 12; i++) {
@@ -220,14 +179,7 @@ unsigned char *r;
   }
 }
 
-void
-#ifdef __FunctionProto__
-swap_register_status(unsigned char *r)
-#else
-swap_register_status(r)
-unsigned char *r;
-#endif
-{
+void swap_register_status(unsigned char *r) {
   int i, tmp;
 
   for (i = 0; i < 12; i++) {
@@ -241,13 +193,7 @@ unsigned char *r;
   }
 }
 
-void
-#ifdef __FunctionProto__
-clear_status(void)
-#else
-clear_status()
-#endif
-{
+void clear_status(void) {
   int i;
 
   for (i = 0; i < 12; i++) {
@@ -255,77 +201,30 @@ clear_status()
   }
 }
 
-void
-#ifdef __FunctionProto__
-set_register_nibble(unsigned char *reg, int n, unsigned char val)
-#else
-set_register_nibble(reg, n, val)
-unsigned char *reg;
-int n;
-unsigned char val;
-#endif
-{
+void set_register_nibble(unsigned char *reg, int n, unsigned char val) {
   reg[n] = val;
 }
 
-unsigned char
-#ifdef __FunctionProto__
-get_register_nibble(unsigned char *reg, int n)
-#else
-get_register_nibble(reg, n)
-unsigned char *reg;
-int n;
-#endif
-{
+unsigned char get_register_nibble(unsigned char *reg, int n) {
   return reg[n];
 }
 
-void
-#ifdef __FunctionProto__
-set_register_bit(unsigned char *reg, int n)
-#else
-set_register_bit(reg, n)
-unsigned char *reg;
-int n;
-#endif
-{
+void set_register_bit(unsigned char *reg, int n) {
   reg[n/4] |= (1 << (n%4));
 }
 
-void
-#ifdef __FunctionProto__
-clear_register_bit(unsigned char *reg, int n)
-#else
-clear_register_bit(reg, n)
-unsigned char *reg;
-int n;
-#endif
-{
+void clear_register_bit(unsigned char *reg, int n) {
   reg[n/4] &= ~(1 << (n%4));
 }
 
-int
-#ifdef __FunctionProto__
-get_register_bit(unsigned char *reg, int n)
-#else
-get_register_bit(reg, n)
-unsigned char *reg;
-int n;
-#endif
-{
+int get_register_bit(unsigned char *reg, int n) {
   return ((int)(reg[n/4] & (1 << (n%4))) > 0)?1:0;
 }
 
 short conf_tab_sx[] = { 1, 2, 2, 2, 2, 0 };
 short conf_tab_gx[] = { 1, 2, 2, 2, 2, 0 };
 
-void
-#ifdef __FunctionProto__
-do_reset(void)
-#else
-do_reset()
-#endif
-{
+void do_reset(void) {
   int i;
 
   for (i = 0; i < 6; i++)
@@ -351,33 +250,15 @@ do_reset()
 #endif
 }
 
-void
-#ifdef __FunctionProto__
-do_inton(void)
-#else
-do_inton()
-#endif
-{
+void do_inton(void) {
   saturn.kbd_ien = 1;
 }
 
-void
-#ifdef __FunctionProto__
-do_intoff(void)
-#else
-do_intoff()
-#endif
-{
+void do_intoff(void) {
   saturn.kbd_ien = 0;
 }
 
-void
-#ifdef __FunctionProto__
-do_return_interupt(void)
-#else
-do_return_interupt()
-#endif
-{
+void do_return_interupt(void) {
   if (saturn.int_pending) {
 #ifdef DEBUG_INTERRUPT
     fprintf(stderr, "PC = %.5lx: RTI SERVICE PENDING INTERRUPT\n",
@@ -404,13 +285,7 @@ do_return_interupt()
   }
 }
 
-void
-#ifdef __FunctionProto__
-do_interupt(void)
-#else
-do_interupt()
-#endif
-{
+void do_interupt(void) {
   interrupt_called = 1;
   if (saturn.intenable) {
 #ifdef DEBUG_INTERRUPT
@@ -422,13 +297,7 @@ do_interupt()
   }
 }
 
-void
-#ifdef __FunctionProto__
-do_kbd_int(void)
-#else
-do_kbd_int()
-#endif
-{
+void do_kbd_int(void) {
   interrupt_called = 1;
   if (saturn.intenable) {
 #ifdef DEBUG_KBD_INT
@@ -445,13 +314,7 @@ do_kbd_int()
   }
 }
 
-void
-#ifdef __FunctionProto__
-do_reset_interrupt_system(void)
-#else
-do_reset_interrupt_system()
-#endif
-{
+void do_reset_interrupt_system(void) {
   int i, gen_intr;
 
   saturn.kbd_ien = 1;
@@ -467,13 +330,7 @@ do_reset_interrupt_system()
   }
 }
 
-void
-#ifdef __FunctionProto__
-do_unconfigure(void)
-#else
-do_unconfigure()
-#endif
-{
+void do_unconfigure(void) {
   int i;
   unsigned int conf;
 
@@ -510,13 +367,7 @@ do_unconfigure()
 #endif
 }
 
-void
-#ifdef __FunctionProto__
-do_configure(void)
-#else
-do_configure()
-#endif
-{
+void do_configure(void) {
   int i;
   unsigned long conf;
 
@@ -549,13 +400,7 @@ do_configure()
 #endif
 }
 
-int
-#ifdef __FunctionProto__
-get_identification(void)
-#else
-get_identification()
-#endif
-{
+int get_identification(void) {
   int i;
   static int chip_id[]
              = { 0, 0, 0, 0, 0x05, 0xf6, 0x07, 0xf8, 0x01, 0xf2, 0, 0 };
@@ -570,7 +415,7 @@ get_identification()
     id = chip_id[2 * i + (2 - saturn.mem_cntl[i].unconfigured)];
   else
     id = 0;
-    
+
 #ifdef DEBUG_ID
   fprintf(stderr, "%.5lx: C=ID, returning: %x\n", saturn.PC, id);
   for (i = 0; i < 6; i++)
@@ -599,13 +444,7 @@ get_identification()
   return 0;
 }
 
-void
-#ifdef __FunctionProto__
-do_shutdown(void)
-#else
-do_shutdown()
-#endif
-{
+void do_shutdown(void) {
   int wake, alarms;
   t1_t2_ticks ticks;
 
@@ -613,7 +452,7 @@ do_shutdown()
     device.display_touched = 0;
     update_display();
   }
-  
+
   stop_timer(RUN_TIMER);
   start_timer(IDLE_TIMER);
 
@@ -708,42 +547,21 @@ do_shutdown()
   start_timer(RUN_TIMER);
 }
 
-void
-#ifdef __FunctionProto__
-set_hardware_stat(int op)
-#else
-set_hardware_stat(op)
-int op;
-#endif
-{
+void set_hardware_stat(int op) {
   if (op & 1) saturn.XM = 1;
   if (op & 2) saturn.SB = 1;
   if (op & 4) saturn.SR = 1;
   if (op & 8) saturn.MP = 1;
 }
 
-void
-#ifdef __FunctionProto__
-clear_hardware_stat(int op)
-#else
-clear_hardware_stat(op)
-int op;
-#endif
-{
+void clear_hardware_stat(int op) {
   if (op & 1) saturn.XM = 0;
   if (op & 2) saturn.SB = 0;
   if (op & 4) saturn.SR = 0;
   if (op & 8) saturn.MP = 0;
 }
 
-int
-#ifdef __FunctionProto__
-is_zero_hardware_stat(int op)
-#else
-is_zero_hardware_stat(op)
-int op;
-#endif
-{
+int is_zero_hardware_stat(int op) {
   if (op & 1) if (saturn.XM != 0) return 0;
   if (op & 2) if (saturn.SB != 0) return 0;
   if (op & 4) if (saturn.SR != 0) return 0;
@@ -751,14 +569,7 @@ int op;
   return 1;
 }
 
-void
-#ifdef __FunctionProto__
-push_return_addr(long addr)
-#else
-push_return_addr(addr)
-long addr;
-#endif
-{
+void push_return_addr(long addr) {
   int i;
 
   if (++saturn.rstkp >= NR_RSTK) {
@@ -781,13 +592,7 @@ long addr;
 #endif
 }
 
-long
-#ifdef __FunctionProto__
-pop_return_addr(void)
-#else
-pop_return_addr()
-#endif
-{
+long pop_return_addr(void) {
 #ifdef DEBUG_RSTK
   int i;
 
@@ -802,15 +607,7 @@ pop_return_addr()
   return saturn.rstk[saturn.rstkp--];
 }
 
-char *
-#ifdef __FunctionProto__
-make_hexstr(long addr, int n)
-#else
-make_hexstr(addr, n)
-long addr;
-int n;
-#endif
-{
+char * make_hexstr(long addr, int n) {
   static char str[44];
   int i, t, trunc;
 
@@ -836,16 +633,7 @@ int n;
   return str;
 }
 
-void
-#ifdef __FunctionProto__
-load_constant(unsigned char *reg, int n, long addr)
-#else
-load_constant(reg, n, addr)
-unsigned char *reg;
-int n;
-long addr;
-#endif
-{
+void load_constant(unsigned char *reg, int n, long addr) {
   int i, p;
 
   p = saturn.P;
@@ -855,16 +643,7 @@ long addr;
   }
 }
 
-void
-#ifdef __FunctionProto__
-load_addr(word_20 *dat, long addr, int n)
-#else
-load_addr(dat, addr, n)
-word_20 *dat;
-long addr;
-int n;
-#endif
-{
+void load_addr(word_20 *dat, long addr, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
@@ -873,16 +652,7 @@ int n;
   }
 }
 
-void
-#ifdef __FunctionProto__
-load_address(unsigned char *reg, long addr, int n)
-#else
-load_address(reg, addr, n)
-unsigned char *reg;
-long addr;
-int n;
-#endif
-{
+void load_address(unsigned char *reg, long addr, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
@@ -890,21 +660,12 @@ int n;
   }
 }
 
-void
-#ifdef __FunctionProto__
-register_to_address(unsigned char *reg, word_20 *dat, int s)
-#else
-register_to_address(reg, dat, s)
-unsigned char *reg;
-word_20 *dat;
-int s;
-#endif
-{
+void register_to_address(unsigned char *reg, word_20 *dat, int s) {
   int i, n;
 
   if (s)
     n = 4;
-  else 
+  else
     n = 5;
   for (i = 0; i < n; i++) {
     *dat &= ~nibble_masks[i];
@@ -912,21 +673,12 @@ int s;
   }
 }
 
-void
-#ifdef __FunctionProto__
-address_to_register(word_20 dat, unsigned char *reg, int s)
-#else
-address_to_register(dat, reg, s)
-word_20 dat;
-unsigned char *reg;
-int s;
-#endif
-{
+void address_to_register(word_20 dat, unsigned char *reg, int s) {
   int i, n;
 
   if (s)
     n = 4;
-  else 
+  else
     n = 5;
   for (i = 0; i < n; i++) {
     reg[i] = dat & 0x0f;
@@ -934,14 +686,7 @@ int s;
   }
 }
 
-long
-#ifdef __FunctionProto__
-dat_to_addr(unsigned char *dat)
-#else
-dat_to_addr(dat)
-unsigned char *dat;
-#endif
-{
+long dat_to_addr(unsigned char *dat) {
   int i;
   long addr;
 
@@ -952,16 +697,8 @@ unsigned char *dat;
   }
   return addr;
 }
- 
-void
-#ifdef __FunctionProto__
-addr_to_dat(long addr, unsigned char *dat)
-#else
-addr_to_dat(addr, dat)
-long addr;
-unsigned char *dat;
-#endif
-{
+
+void addr_to_dat(long addr, unsigned char *dat) {
   int i;
 
   for (i = 0; i < 5; i++) {
@@ -969,16 +706,8 @@ unsigned char *dat;
     addr >>= 4;
   }
 }
- 
-void
-#ifdef __FunctionProto__
-add_address(word_20 *dat, int add)
-#else
-add_address(dat, add)
-word_20 *dat;
-int add;
-#endif
-{
+
+void add_address(word_20 *dat, int add) {
   *dat += add;
   if (*dat & (word_20)0xfff00000) {
     saturn.CARRY = 1;
@@ -990,7 +719,7 @@ int add;
 
 static int start_fields[] = {
   -1,  0,  2,  0, 15,  3,  0,  0,
-  -1,  0,  2,  0, 15,  3,  0,  0, 
+  -1,  0,  2,  0, 15,  3,  0,  0,
    0,  0,  0
 };
 
@@ -1000,14 +729,7 @@ static int end_fields[] = {
    3,  2,  0
 };
 
-static inline int
-#ifdef __FunctionProto__
-get_start(int code)
-#else
-get_start(code)
-int code;
-#endif
-{
+static inline int get_start(int code) {
   int s;
 
   if ((s = start_fields[code]) == -1) {
@@ -1016,14 +738,7 @@ int code;
   return s;
 }
 
-static inline int
-#ifdef __FunctionProto__
-get_end(int code)
-#else
-get_end(code)
-int code;
-#endif
-{
+static inline int get_end(int code) {
   int e;
 
   if ((e = end_fields[code]) == -1) {
@@ -1032,16 +747,7 @@ int code;
   return e;
 }
 
-void
-#ifdef __FunctionProto__
-store(word_20 dat, unsigned char *reg, int code)
-#else
-store(dat, reg, code)
-word_20 dat;
-unsigned char *reg;
-int code;
-#endif
-{
+void store(word_20 dat, unsigned char *reg, int code) {
   int i, s, e;
 
   s = get_start(code);
@@ -1051,16 +757,7 @@ int code;
   }
 }
 
-void
-#ifdef __FunctionProto__
-store_n(word_20 dat, unsigned char *reg, int n)
-#else
-store_n(dat, reg, n)
-word_20 dat;
-unsigned char *reg;
-int n;
-#endif
-{
+void store_n(word_20 dat, unsigned char *reg, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
@@ -1068,16 +765,7 @@ int n;
   }
 }
 
-void
-#ifdef __FunctionProto__
-recall(unsigned char *reg, word_20 dat, int code)
-#else
-recall(reg, dat, code)
-unsigned char *reg;
-word_20 dat;
-int code;
-#endif
-{
+void recall(unsigned char *reg, word_20 dat, int code) {
   int i, s, e;
 
   s = get_start(code);
@@ -1087,20 +775,10 @@ int code;
   }
 }
 
-void
-#ifdef __FunctionProto__
-recall_n(unsigned char *reg, word_20 dat, int n)
-#else
-recall_n(reg, dat, n)
-unsigned char *reg;
-word_20 dat;
-int n;
-#endif
-{
+void recall_n(unsigned char *reg, word_20 dat, int n) {
   int i;
 
   for (i = 0; i < n; i++) {
     reg[i] = read_nibble_crc(dat++);
   }
 }
-

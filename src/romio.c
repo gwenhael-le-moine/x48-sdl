@@ -37,16 +37,7 @@
 unsigned int opt_gx = 0;
 unsigned int rom_size = 0;
 
-int
-#ifdef __FunctionProto__
-read_rom_file(char *name, unsigned char **mem, int *size)
-#else
-read_rom_file(name, mem, size)
-char *name;
-unsigned char **mem;
-int *size;
-#endif
-{
+int read_rom_file(char *name, unsigned char **mem, int *size) {
   struct stat st;
   FILE *fp;
   unsigned char *tmp_mem;

@@ -126,13 +126,7 @@ word_64 time_offset = 0x0;
  * 8. Prevent AutoOff by setting TIMEOUT
  *
  */
-void
-#ifdef __FunctionProto__
-set_accesstime(void)
-#else
-set_accesstime()
-#endif
-{
+void set_accesstime(void) {
   struct timeval  tv;
 #ifndef SOLARIS
   struct timezone tz;
@@ -235,14 +229,7 @@ printf("***set_accesstime***\n");
   saturn.ram[timeoutclk_loc] = 0xf;
 }
 
-void
-#ifdef __FunctionProto__
-start_timer(int timer)
-#else
-start_timer(timer)
-int timer;
-#endif
-{
+void start_timer(int timer) {
   struct timeval  tv;
 #ifndef SOLARIS
   struct timezone tz;
@@ -273,14 +260,7 @@ int timer;
 #endif
 }
 
-void
-#ifdef __FunctionProto__
-restart_timer(int timer)
-#else
-restart_timer(timer)
-int timer;
-#endif
-{
+void restart_timer(int timer) {
   struct timeval  tv;
 #ifndef SOLARIS
   struct timezone tz;
@@ -315,14 +295,7 @@ int timer;
 #endif
 }
 
-void
-#ifdef __FunctionProto__
-stop_timer(int timer)
-#else
-stop_timer(timer)
-int timer;
-#endif
-{
+void stop_timer(int timer) {
   struct timeval  tv;
 #ifndef SOLARIS
   struct timezone tz;
@@ -360,14 +333,7 @@ int timer;
 #endif
 }
 
-void
-#ifdef __FunctionProto__
-reset_timer(int timer)
-#else
-reset_timer(timer)
-int timer;
-#endif
-{
+void reset_timer(int timer) {
   if (timer > NR_TIMERS)
     return;
   timers[timer].run = 0;
@@ -381,14 +347,7 @@ int timer;
 
 static word_64 zero = 0;
 
-word_64
-#ifdef __FunctionProto__
-get_timer(int timer)
-#else
-get_timer(timer)
-int timer;
-#endif
-{
+word_64 get_timer(int timer) {
   struct timeval  tv;
 #ifndef SOLARIS
   struct timezone tz;
@@ -432,13 +391,7 @@ int timer;
  *
  */
 
-t1_t2_ticks
-#ifdef __FunctionProto__
-get_t1_t2(void)
-#else
-get_t1_t2()
-#endif
-{
+t1_t2_ticks get_t1_t2(void) {
   struct timeval  tv;
 #ifndef SOLARIS
   struct timezone tz;

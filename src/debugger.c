@@ -296,13 +296,7 @@ cmd_tbl[] =
   }
 };
 
-void
-#ifdef __FunctionProto__
-init_debugger (void)
-#else
-init_debugger ()
-#endif
-{
+void init_debugger (void) {
   int i;
 
   num_bkpts = 0;
@@ -311,15 +305,7 @@ init_debugger ()
   exec_flags = 0;
 }
 
-int
-#ifdef __FunctionProto__
-check_breakpoint (int type, word_20 addr)
-#else
-check_breakpoint (type, addr)
-     int type;
-     word_20 addr;
-#endif
-{
+int check_breakpoint (int type, word_20 addr) {
   struct breakpoint *bp;
   int i, n;
 
@@ -359,16 +345,7 @@ check_breakpoint (type, addr)
   return 0;
 }
 
-char *
-#ifdef __FunctionProto__
-read_str(char *str, int n, int fp)
-#else
-read_str(str, n, fp)
-  char *str;
-  int n;
-  int fp;
-#endif
-{
+char * read_str(char *str, int n, int fp) {
   int cc;
   int flags;
 
@@ -399,14 +376,7 @@ read_str(str, n, fp)
 }
 
 #ifndef HAVE_READLINE
-char *
-#ifdef __FunctionProto__
-readline(const char *prompt)
-#else
-readline(prompt)
-  char *prompt;
-#endif
-{
+char * readline(const char *prompt) {
   char rl[81];
   char *nrl;
   if (prompt)
@@ -440,14 +410,7 @@ readline(prompt)
 }
 #endif
 
-static inline void
-#ifdef __FunctionProto__
-str_to_upper (char *arg)
-#else
-str_to_upper (arg)
-     char *arg;
-#endif
-{
+static inline void str_to_upper (char *arg) {
   int i;
 
   for (i = 0; i < strlen (arg); i++)
@@ -459,15 +422,7 @@ str_to_upper (arg)
     }
 }
 
-static int
-#ifdef __FunctionProto__
-decode_dec (int *num, char *arg)
-#else
-decode_dec (num, arg)
-     int *num;
-     char *arg;
-#endif
-{
+static int decode_dec (int *num, char *arg) {
   int i;
 
   if (arg == (char *) 0)
@@ -494,15 +449,7 @@ decode_dec (num, arg)
   return 1;
 }
 
-static int
-#ifdef __FunctionProto__
-decode_20 (word_20 * addr, char *arg)
-#else
-decode_20 (addr, arg)
-     word_20 *addr;
-     char *arg;
-#endif
-{
+static int decode_20 (word_20 * addr, char *arg) {
   int i;
 
   if (arg == (char *) 0)
@@ -534,15 +481,7 @@ decode_20 (addr, arg)
   return 1;
 }
 
-static int
-#ifdef __FunctionProto__
-decode_32 (word_32 * addr, char *arg)
-#else
-decode_32 (addr, arg)
-     word_32 *addr;
-     char *arg;
-#endif
-{
+static int decode_32 (word_32 * addr, char *arg) {
   int i;
 
   if (arg == (char *) 0)
@@ -573,15 +512,7 @@ decode_32 (addr, arg)
   return 1;
 }
 
-static int
-#ifdef __FunctionProto__
-decode_64 (word_64 * addr, char *arg)
-#else
-decode_64 (addr, arg)
-     word_64 *addr;
-     char *arg;
-#endif
-{
+static int decode_64 (word_64 * addr, char *arg) {
   int i;
 
   if (arg == (char *) 0)
@@ -635,15 +566,7 @@ decode_64 (addr, arg)
   return 1;
 }
 
-char *
-#ifdef __FunctionProto__
-str_nibbles (word_20 addr, int n)
-#else
-str_nibbles (addr, n)
-     word_20 addr;
-     int n;
-#endif
-{
+char * str_nibbles (word_20 addr, int n) {
   static char str[1025];
   char *cp;
   int i;
@@ -664,14 +587,7 @@ str_nibbles (addr, n)
   return str;
 }
 
-static int
-#ifdef __FunctionProto__
-confirm (const char *prompt)
-#else
-confirm (prompt)
-     const char *prompt;
-#endif
-{
+static int confirm (const char *prompt) {
   char ans[80];
 
   printf ("%s (y or n) ", prompt);
@@ -695,15 +611,7 @@ confirm (prompt)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_break (int argc, char **argv)
-#else
-do_break (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_break (int argc, char **argv) {
   int i;
   word_20 addr;
 
@@ -750,27 +658,11 @@ do_break (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_continue (int argc, char **argv)
-#else
-do_continue (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_continue (int argc, char **argv) {
   continue_flag = 1;
 }
 
-static void
-#ifdef __FunctionProto__
-do_delete (int argc, char **argv)
-#else
-do_delete (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_delete (int argc, char **argv) {
   int num;
 
   if (argc == 1)
@@ -846,15 +738,7 @@ do_delete (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_exit (int argc, char **argv)
-#else
-do_exit (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_exit (int argc, char **argv) {
   if (confirm ("Exit the emulator WITHOUT saving its state?"))
     {
       printf ("Exit.\n");
@@ -863,15 +747,7 @@ do_exit (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_go (int argc, char **argv)
-#else
-do_go (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_go (int argc, char **argv) {
   word_20 addr;
 
   str_to_upper (argv[1]);
@@ -882,15 +758,7 @@ do_go (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_help (int argc, char **argv)
-#else
-do_help (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_help (int argc, char **argv) {
   int i;
 
   for (i = 0; cmd_tbl[i].name; i++)
@@ -902,15 +770,7 @@ do_help (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_load (int argc, char **argv)
-#else
-do_load (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_load (int argc, char **argv) {
   saturn_t tmp_saturn;
   device_t tmp_device;
 
@@ -967,15 +827,7 @@ do_load (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_mode (int argc, char **argv)
-#else
-do_mode (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_mode (int argc, char **argv) {
   if (argc < 2)
     {
       printf ("Disassembler uses %s mnemonics.\n", mode_name[disassembler_mode]);
@@ -998,15 +850,7 @@ do_mode (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_quit (int argc, char **argv)
-#else
-do_quit (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_quit (int argc, char **argv) {
   if (confirm ("Quit the emulator and save its state?"))
     {
       printf ("Exit.\n");
@@ -1016,16 +860,7 @@ do_quit (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-set_reg (word_64 val, int n, unsigned char *r)
-#else
-set_reg (val, n, r)
-     word_64 val;
-     int n;
-     unsigned char *r;
-#endif
-{
+static void set_reg (word_64 val, int n, unsigned char *r) {
   int i;
 
   for (i = 0; i < n; i++)
@@ -1038,16 +873,7 @@ set_reg (val, n, r)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-dump_reg (const char *reg, int n, unsigned char *r)
-#else
-dump_reg (reg, n, r)
-     const char *reg;
-     int n;
-     unsigned char *r;
-#endif
-{
+static void dump_reg (const char *reg, int n, unsigned char *r) {
   int i;
 
   printf ("%s:\t", reg);
@@ -1059,14 +885,7 @@ dump_reg (reg, n, r)
 }
 
 
-static void
-#ifdef __FunctionProto__
-set_st (word_64 val)
-#else
-set_st (val)
-     word_64 val;
-#endif
-{
+static void set_st (word_64 val) {
   int i;
 
   for (i = 0; i < 16; i++)
@@ -1077,13 +896,7 @@ set_st (val)
 #endif
 }
 
-static void
-#ifdef __FunctionProto__
-dump_st (void)
-#else
-dump_st ()
-#endif
-{
+static void dump_st (void) {
   int i;
   int val;
 
@@ -1115,14 +928,7 @@ dump_st ()
     }
 }
 
-static void
-#ifdef __FunctionProto__
-set_hst (word_64 val)
-#else
-set_hst (val)
-     word_64 val;
-#endif
-{
+static void set_hst (word_64 val) {
   saturn.XM = 0;
   saturn.SB = 0;
   saturn.SR = 0;
@@ -1148,13 +954,7 @@ set_hst (val)
 #endif
 }
 
-static void
-#ifdef __FunctionProto__
-dump_hst (void)
-#else
-dump_hst ()
-#endif
-{
+static void dump_hst (void) {
   short hst = 0;
   if (saturn.XM != 0)
     hst |= 1;
@@ -1187,15 +987,7 @@ static const char *mctl_str_sx[] = {
   "SysROM"
 };
 
-static void
-#ifdef __FunctionProto__
-do_ram (int argc, char **argv)
-#else
-do_ram (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_ram (int argc, char **argv) {
   int i;
 
   for (i = 0; i < 5; i++)
@@ -1216,15 +1008,7 @@ do_ram (argc, argv)
     printf("Port 2      switched to bank %d\n", saturn.bank_switch);
 }
 
-static void
-#ifdef __FunctionProto__
-do_regs (int argc, char **argv)
-#else
-do_regs (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_regs (int argc, char **argv) {
   int i;
   word_64 val;
 
@@ -1510,15 +1294,7 @@ do_regs (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_save (int argc, char **argv)
-#else
-do_save (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_save (int argc, char **argv) {
   if (write_files ())
     {
       printf ("Saving done.\n");
@@ -1535,13 +1311,7 @@ struct se {
   struct se *se_next;
 };
 
-char *
-#ifdef __FunctionProto__
-get_stack (void)
-#else
-get_stack ()
-#endif
-{
+char * get_stack (void) {
   word_20 dsktop, dskbot;
   word_20 sp = 0, end = 0, ent = 0;
   word_20 ram_base, ram_mask;
@@ -1595,15 +1365,7 @@ get_stack ()
   return 0;			// Bugfix in SDL port
 }
 
-static void
-#ifdef __FunctionProto__
-do_stack (int argc, char **argv)
-#else
-do_stack (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_stack (int argc, char **argv) {
   word_20 dsktop, dskbot;
   word_20 sp = 0, end = 0, ent = 0;
   word_20 ram_base, ram_mask;
@@ -1682,29 +1444,13 @@ do_stack (argc, argv)
   saturn.mem_cntl[1].config[1] = ram_mask;
 }
 
-static void
-#ifdef __FunctionProto__
-do_stat (int argc, char **argv)
-#else
-do_stat (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_stat (int argc, char **argv) {
   printf ("Instructions/s: %ld\n", saturn.i_per_s);
   printf ("Timer 1 I/TICK: %d\n", saturn.t1_tick);
   printf ("Timer 2 I/TICK: %d\n", saturn.t2_tick);
 }
 
-static void
-#ifdef __FunctionProto__
-do_step (int argc, char **argv)
-#else
-do_step (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_step (int argc, char **argv) {
   word_20 next_instr;
   word_32 n;
   int leave;
@@ -1774,15 +1520,7 @@ do_step (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_reset (int argc, char **argv)
-#else
-do_reset (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_reset (int argc, char **argv) {
   if (confirm ("Do a RESET (PC = 00000)?"))
     {
       saturn.PC = 0;
@@ -1790,15 +1528,7 @@ do_reset (argc, argv)
     }
 }
 
-static void
-#ifdef __FunctionProto__
-do_rstk (int argc, char **argv)
-#else
-do_rstk (argc, argv)
-     int argc;
-     char *argv;
-#endif
-{
+static void do_rstk (int argc, char **argv) {
   int i, j;
 
   disassemble (saturn.PC, instr);
@@ -1819,13 +1549,7 @@ do_rstk (argc, argv)
     }
 }
 
-int
-#ifdef __FunctionProto__
-debug (void)
-#else
-debug ()
-#endif
-{
+int debug (void) {
   t1_t2_ticks ticks;
   struct cmd *cmdp;
   char *cp;
@@ -2030,13 +1754,7 @@ debug ()
   return 0;
 }
 
-int
-#ifdef __FunctionProto__
-emulate_debug (void)
-#else
-emulate_debug ()
-#endif
-{
+int emulate_debug (void) {
   do
     {
 

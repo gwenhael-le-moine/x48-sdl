@@ -126,13 +126,7 @@ word_20 jumpmasks[] = {
   0xffff0000, 0xfff00000, 0xff000000, 0xf0000000
 };
 
-int
-#ifdef __FunctionProto__
-decode_group_80(void)
-#else
-decode_group_80()
-#endif
-{
+int decode_group_80(void) {
   int t, op3, op4, op5, op6;
   unsigned char *REG;
   long addr;
@@ -304,13 +298,7 @@ decode_group_80()
   }
 }
 
-int
-#ifdef __FunctionProto__
-decode_group_1(void)
-#else
-decode_group_1()
-#endif
-{
+int decode_group_1(void) {
   int op, op2, op3, op4;
 
   op2 = read_nibble(saturn.PC + 1);
@@ -1971,13 +1959,7 @@ static inline int decode_8_thru_f(int op1)
   }
 }
 
-inline int
-#ifdef __FunctionProto__
-step_instruction(void)
-#else
-step_instruction()
-#endif
-{
+inline int step_instruction(void) {
   int op0, op1, op2, op3;
   int stop = 0;
 
@@ -2220,13 +2202,7 @@ step_instruction()
   return stop;
 }
 
-void
-#ifdef __FunctionProto__
-schedule(void)
-#else
-schedule()
-#endif
-{
+void schedule(void) {
   t1_t2_ticks		ticks;
   unsigned long		steps;
   static unsigned long	old_stat_instr;
@@ -2426,13 +2402,7 @@ schedule()
   }
 }
 
-int
-#ifdef __FunctionProto__
-emulate(void)
-#else
-emulate()
-#endif
-{
+int emulate(void) {
   struct timeval  tv;
   struct timeval  tv2;
 #ifndef SOLARIS

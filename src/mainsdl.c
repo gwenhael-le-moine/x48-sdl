@@ -26,7 +26,7 @@
 /* $Log: main.c,v $
  * Revision 1.11  1995/01/11  18:20:01  ecd
  * major update to support HP48 G/GX
- *	
+ *
  * Revision 1.10  1994/12/07  20:20:50  ecd
  * changed initialization
  *
@@ -96,14 +96,7 @@ char **saved_argv;
 
 saturn_t saturn;
 
-void
-#ifdef __FunctionProto__
-signal_handler(int sig)
-#else
-signal_handler(sig)
-int sig;
-#endif
-{
+void signal_handler(int sig) {
   switch (sig) {
     case SIGINT:
       enter_debugger |= USER_INTERRUPT;
@@ -149,17 +142,9 @@ void pdlexit()
 }
 #endif
 
-int
-#ifdef __FunctionProto__
-main(int argc, char **argv)
-#else
-main(argc, argv)
-int argc;
-char **argv;
-#endif
-{
+int main(int argc, char **argv) {
 	int rv,i;
-	char *name;	
+	char *name;
 	sigset_t set;
 	struct sigaction sa;
 	long flags;
@@ -170,11 +155,11 @@ char **argv;
 #include <PDL.h>
 #endif
 
-	
+
 	atexit(testexit);
 
 	printf("x48-sdl\n");
-	
+
 #ifdef PLATFORMWEBOS
 	// start the PDL library
 	PDL_ScreenMetrics ScreenMetrics;
@@ -183,18 +168,18 @@ char **argv;
 	printf("Screen size: %d %d\n",ScreenMetrics.horizontalPixels,ScreenMetrics.verticalPixels);
 	atexit(pdlexit);
 #endif
-	
+
 	// SDL Initialization
 	SDLInit();
-	
-	
-	
+
+
+
 	// Global parameter initialization
 	get_resources();
-	
-	
+
+
 	setlocale(LC_ALL, "C");
-	
+
 	name = (char *)0;
 	/*
 	*  Get the name we are called.
@@ -204,11 +189,11 @@ char **argv;
 	progname = argv[0];
 	else
 	progname++;
-	
-	
 
 
-	
+
+
+
 	// initialize emulator stuff
 	rv = init_emulator();
 	if(rv!=0)
@@ -217,20 +202,20 @@ char **argv;
 		for(i=0;errinit_text[i];i++)
 			printf("%s\n",errinit_text[i]);
 		SDLMessageBox(300,200,errinit_title,errinit_text,0xf0e0c0c0,0xff000000,0);
-	
+
 		return 0;
 	}
-	
+
 
 	// Create the HP-48 window
 	SDLCreateHP();
-	
 
-	
+
+
 	// Some more initialization
 	printf("init active stuff\n");
 	init_active_stuff();
-	
+
 	/*
 	*  install a handler for SIGALRM
 	*/
@@ -243,7 +228,7 @@ char **argv;
 	sa.sa_flags = SA_RESTART;
 	#endif
 	sigaction(SIGALRM, &sa, (struct sigaction *)0);
-	
+
 	/*
 	*  install a handler for SIGINT
 	*/
@@ -256,7 +241,7 @@ char **argv;
 	sa.sa_flags = SA_RESTART;
 	#endif
 	sigaction(SIGINT, &sa, (struct sigaction *)0);
-	
+
 	/*
 	*  install a handler for SIGPIPE
 	*/
@@ -269,7 +254,7 @@ char **argv;
 		sa.sa_flags = SA_RESTART;
 	#endif
 	sigaction(SIGPIPE, &sa, (struct sigaction *)0);
-	
+
 	/*
 	* set the real time interval timer
 	*/
@@ -280,7 +265,7 @@ char **argv;
 	it.it_value.tv_sec = 0;
 	it.it_value.tv_usec = interval;
 	setitimer(ITIMER_REAL, &it, (struct itimerval *)0);
-	
+
 	/*
 	* Set stdin flags to not include O_NDELAY and O_NONBLOCK
 	*/
@@ -289,20 +274,19 @@ char **argv;
 	flags &= ~O_NDELAY;
 	flags &= ~O_NONBLOCK;
 	fcntl(STDIN_FILENO, F_SETFL, flags);
-	
-	
-	printf("start emulate\n");	
-	
+
+
+	printf("start emulate\n");
+
 	do
 	{
 		if (!exec_flags)
 			emulate ();
 		else
 			emulate_debug ();
-	
+
 		debug();
 	} while (1);
-	
+
 	return 0;
 }
-
