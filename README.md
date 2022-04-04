@@ -1,3 +1,12 @@
+Made it compile on a modern OS (Slackware 15+, gcc 11.2.0, …)
+
+TODO:
+- port to SDL2
+
+by Gwenhael Le Moine, 2022
+
+--- Original (SDL port) readme.txt below ---
+
 HP 48GX emulator - Running on SDL (Simple DirectMedia Layer)
 
 by Daniel Roggen, 2011-2012
@@ -11,7 +20,7 @@ NOTES
 - x48 compiles on many unices but x48-sdl won't: lots of stuff has been 'statically configured'.
 - x48-sdl is based on x48 version 0.6.4 plus a patch from an older x48 version that disables arrow and delete key repeat (throttling-related issue)
 - It might happen that the HP48 doesn't turn on: in this case press repeatedly the ON key, or close and relaunch the program. This is an issue of x48.
-- Currently there is no way to load a program from the emulator. However the data of the emulator is stored in a directory '~/hp48'. You can also place there your own 'ram', 'port1' or 'port2' files to load some programs. For instance set-up your emulator on your PC then transfer the 'port1'. If needed you can also erase these files to clear the HP48 memory. 
+- Currently there is no way to load a program from the emulator. However the data of the emulator is stored in a directory '~/hp48'. You can also place there your own 'ram', 'port1' or 'port2' files to load some programs. For instance set-up your emulator on your PC then transfer the 'port1'. If needed you can also erase these files to clear the HP48 memory.
 - Credit where credit's due: The original author of x48 is Eddie C. Dost, the maintainer is G. Allen Morris III
 
 HOW TO COMPILE
@@ -42,19 +51,9 @@ This is what was done:
 
 
 
-HISTORY 
+HISTORY
 
-v0.9.0 26.01.2012: 
-	- Add sdl_compact to minimize the screen space needed for small devices (currently for WebOS)
-	
+v0.9.0 26.01.2012:
+        - Add sdl_compact to minimize the screen space needed for small devices (currently for WebOS)
+
 v0.8.0 09.01.2012: First release
-
-
-
-
-
-
-
-
-
-

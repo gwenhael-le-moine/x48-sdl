@@ -1,6 +1,6 @@
 /src/*.o
 /src/*.d
-/src/checkrom
-/src/dump2rom
-/src/mkcard
-/src/x48
+/checkrom
+/dump2rom
+/mkcard
+/x48
