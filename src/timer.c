@@ -65,10 +65,10 @@
 /* #define DEBUG_TIMER_ADJUST 1 */
 
 #ifdef SOLARIS
-extern int gettimeofday __ProtoType__((struct timeval *tp));
+extern int gettimeofday(struct timeval *tp);
 #endif
 #ifdef SUNOS
-extern int gettimeofday __ProtoType__((struct timeval *, struct timezone *));
+extern int gettimeofday(struct timeval *, struct timezone *);
 #endif
 
 typedef struct x48_timer_t {

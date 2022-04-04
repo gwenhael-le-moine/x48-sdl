@@ -50,8 +50,6 @@
 
 #include "config.h"
 
-#define __ProtoType__(x) x
-
 /*
  * If we are running Linux, `linux' will be defined by gcc.
  */
