@@ -65,14 +65,15 @@
 /* #define DEBUG_TIMER_ADJUST 1 */
 
 #ifdef SOLARIS
-extern int gettimeofday(struct timeval *tp);
+extern int gettimeofday (struct timeval *tp);
 #endif
 #ifdef SUNOS
-extern int gettimeofday(struct timeval *, struct timezone *);
+extern int gettimeofday (struct timeval *, struct timezone *);
 #endif
 
-typedef struct x48_timer_t {
-  word_1  run;
+typedef struct x48_timer_t
+{
+  word_1 run;
   word_64 start;
   word_64 stop;
   word_64 value;
@@ -85,8 +86,8 @@ static long systime_offset = 0;
 /*
  * Ticks for THU 01.01.1970 00:00:00
  */
-//word_64 unix_0_time  = 0x1CF2E8F800000L;
-word_64 unix_0_time  = 0x1CF2E8F800000LL;
+// word_64 unix_0_time  = 0x1CF2E8F800000L;
+word_64 unix_0_time = 0x1CF2E8F800000LL;
 word_64 ticks_10_min = 0x00b40000L;
 
 /*
@@ -99,17 +100,17 @@ word_64 set_0_time = 0x0;
  */
 word_64 time_offset = 0x0;
 
-#define RAM_BASE_SX	0x70000
-#define ACCESSTIME_SX	(0x70052 - RAM_BASE_SX)
-#define ACCESSCRC_SX	(0x7005F - RAM_BASE_SX)
-#define TIMEOUT_SX	(0x70063 - RAM_BASE_SX)
-#define TIMEOUTCLK_SX	(0x70070 - RAM_BASE_SX)
+#define RAM_BASE_SX 0x70000
+#define ACCESSTIME_SX (0x70052 - RAM_BASE_SX)
+#define ACCESSCRC_SX (0x7005F - RAM_BASE_SX)
+#define TIMEOUT_SX (0x70063 - RAM_BASE_SX)
+#define TIMEOUTCLK_SX (0x70070 - RAM_BASE_SX)
 
-#define RAM_BASE_GX	0x80000
-#define ACCESSTIME_GX	(0x80058 - RAM_BASE_GX)
-#define ACCESSCRC_GX	(0x80065 - RAM_BASE_GX)
-#define TIMEOUT_GX	(0x80069 - RAM_BASE_GX)
-#define TIMEOUTCLK_GX	(0x80076 - RAM_BASE_GX)
+#define RAM_BASE_GX 0x80000
+#define ACCESSTIME_GX (0x80058 - RAM_BASE_GX)
+#define ACCESSCRC_GX (0x80065 - RAM_BASE_GX)
+#define TIMEOUT_GX (0x80069 - RAM_BASE_GX)
+#define TIMEOUTCLK_GX (0x80076 - RAM_BASE_GX)
 
 #define calc_crc(nib) (crc = (crc >> 4) ^ (((crc ^ (nib)) & 0xf) * 0x1081))
 
@@ -126,45 +127,46 @@ word_64 time_offset = 0x0;
  * 8. Prevent AutoOff by setting TIMEOUT
  *
  */
-void set_accesstime(void) {
-  struct timeval  tv;
+void
+set_accesstime (void)
+{
+  struct timeval tv;
 #ifndef SOLARIS
   struct timezone tz;
 #endif
-  word_64   ticks, timeout, timer2;
-  word_20   accesstime_loc, timeout_loc;
-  word_20   accesscrc_loc, timeoutclk_loc;
-  word_16   crc;
-  word_4    val;
-  int     i;
-  time_t    gmt;
-  struct tm	 *ltm;
+  word_64 ticks, timeout, timer2;
+  word_20 accesstime_loc, timeout_loc;
+  word_20 accesscrc_loc, timeoutclk_loc;
+  word_16 crc;
+  word_4 val;
+  int i;
+  time_t gmt;
+  struct tm *ltm;
 
-printf("***set_accesstime***\n");
+  printf ("***set_accesstime***\n");
 
   /*
    * This is done to set the variable 'timezone' on SYSV systems
    */
-  (void)time(&gmt);
-  ltm = localtime(&gmt);
+  (void)time (&gmt);
+  ltm = localtime (&gmt);
 #if defined(PLATFORM_MINGW)
   // SDL Port cygwin: use _timezone to get the timezone offset
   systime_offset += timezone;
 #else
 #if defined(SYSV_TIME) || defined(__sgi)
   systime_offset = timezone;
-  if( ltm->tm_isdst )
+  if (ltm->tm_isdst)
     systime_offset -= 3600;
 #else
   systime_offset = -ltm->tm_gmtoff;
 #endif
 #endif
 
-
 #ifdef SOLARIS
-  gettimeofday(&tv);
+  gettimeofday (&tv);
 #else
-  gettimeofday(&tv, &tz);
+  gettimeofday (&tv, &tz);
 #endif
   tv.tv_sec -= systime_offset;
 
@@ -178,7 +180,7 @@ printf("***set_accesstime***\n");
   timer2 = saturn.timer2;
   if (saturn.timer2 & 0x80000000)
     {
-      assert(timer2 < 0);
+      assert (timer2 < 0);
     }
 
   ticks += timer2;
@@ -205,7 +207,7 @@ printf("***set_accesstime***\n");
   for (i = 0; i < 13; i++)
     {
       val = ticks & 0xf;
-      calc_crc(val);
+      calc_crc (val);
       saturn.ram[accesstime_loc + i] = val;
       ticks >>= 4;
     }
@@ -221,7 +223,7 @@ printf("***set_accesstime***\n");
   for (i = 0; i < 13; i++)
     {
       val = timeout & 0xf;
-      calc_crc(val);
+      calc_crc (val);
       saturn.ram[timeout_loc + i] = val;
       timeout >>= 4;
     }
@@ -229,39 +231,47 @@ printf("***set_accesstime***\n");
   saturn.ram[timeoutclk_loc] = 0xf;
 }
 
-void start_timer(int timer) {
-  struct timeval  tv;
+void
+start_timer (int timer)
+{
+  struct timeval tv;
 #ifndef SOLARIS
   struct timezone tz;
 #endif
-  assert(timer <= NR_TIMERS);
+  assert (timer <= NR_TIMERS);
 
   if (timers[timer].run == 1)
     return;
 
 #ifdef SOLARIS
-  gettimeofday(&tv);
+  gettimeofday (&tv);
 #else
-  gettimeofday(&tv, &tz);
+  gettimeofday (&tv, &tz);
 #endif
   tv.tv_sec -= systime_offset;
 
   timers[timer].run = 1;
-  if (timer == T1_TIMER) {
-    timers[timer].start = (tv.tv_sec << 9);
-    timers[timer].start += (tv.tv_usec / 15625) >> 3;
-  } else {
-    timers[timer].start = tv.tv_sec;
-    timers[timer].start <<= 13;
-    timers[timer].start += (tv.tv_usec << 7) / 15625;
-  }
+  if (timer == T1_TIMER)
+    {
+      timers[timer].start = (tv.tv_sec << 9);
+      timers[timer].start += (tv.tv_usec / 15625) >> 3;
+    }
+  else
+    {
+      timers[timer].start = tv.tv_sec;
+      timers[timer].start <<= 13;
+      timers[timer].start += (tv.tv_usec << 7) / 15625;
+    }
 #ifdef DEBUG_TIMER
-  fprintf(stderr, "Timer%c[%d] start at 0x%lx\n", timer == T1_TIMER?'*':' ', timer, timers[timer].start);
+  fprintf (stderr, "Timer%c[%d] start at 0x%lx\n",
+           timer == T1_TIMER ? '*' : ' ', timer, timers[timer].start);
 #endif
 }
 
-void restart_timer(int timer) {
-  struct timeval  tv;
+void
+restart_timer (int timer)
+{
+  struct timeval tv;
 #ifndef SOLARIS
   struct timezone tz;
 #endif
@@ -274,29 +284,33 @@ void restart_timer(int timer) {
   timers[timer].value = 0;
 
 #ifdef SOLARIS
-  gettimeofday(&tv);
+  gettimeofday (&tv);
 #else
-  gettimeofday(&tv, &tz);
+  gettimeofday (&tv, &tz);
 #endif
   tv.tv_sec -= systime_offset;
 
   timers[timer].run = 1;
-  if (timer == T1_TIMER) {
-    timers[timer].start = (tv.tv_sec << 9);
-    timers[timer].start += (tv.tv_usec / 15625) >> 3;
-  } else {
-    timers[timer].start = tv.tv_sec;
-    timers[timer].start <<= 13;
-    timers[timer].start += (tv.tv_usec << 7) / 15625;
-  }
+  if (timer == T1_TIMER)
+    {
+      timers[timer].start = (tv.tv_sec << 9);
+      timers[timer].start += (tv.tv_usec / 15625) >> 3;
+    }
+  else
+    {
+      timers[timer].start = tv.tv_sec;
+      timers[timer].start <<= 13;
+      timers[timer].start += (tv.tv_usec << 7) / 15625;
+    }
 #ifdef DEBUG_TIMER
-  fprintf(stderr, "Timer[%d] restart at 0x%lx\n", timer,
-          timers[timer].start);
+  fprintf (stderr, "Timer[%d] restart at 0x%lx\n", timer, timers[timer].start);
 #endif
 }
 
-void stop_timer(int timer) {
-  struct timeval  tv;
+void
+stop_timer (int timer)
+{
+  struct timeval tv;
 #ifndef SOLARIS
   struct timezone tz;
 #endif
@@ -308,32 +322,38 @@ void stop_timer(int timer) {
     return;
 
 #ifdef SOLARIS
-  gettimeofday(&tv);
+  gettimeofday (&tv);
 #else
-  gettimeofday(&tv, &tz);
+  gettimeofday (&tv, &tz);
 #endif
   tv.tv_sec -= systime_offset;
 
   timers[timer].run = 0;
-  if (timer == T1_TIMER) {
-    timers[timer].stop = (tv.tv_sec << 9);
-    timers[timer].stop += (tv.tv_usec / 15625) >> 3;
-  } else {
-    timers[timer].stop = tv.tv_sec;
-    timers[timer].stop <<= 13;
-    timers[timer].stop += (tv.tv_usec << 7) / 15625;
-  }
+  if (timer == T1_TIMER)
+    {
+      timers[timer].stop = (tv.tv_sec << 9);
+      timers[timer].stop += (tv.tv_usec / 15625) >> 3;
+    }
+  else
+    {
+      timers[timer].stop = tv.tv_sec;
+      timers[timer].stop <<= 13;
+      timers[timer].stop += (tv.tv_usec << 7) / 15625;
+    }
 
   timers[timer].value += timers[timer].stop - timers[timer].start;
-//  add_sub_64(&timers[timer].stop, &timers[timer].start, &timers[timer].value);
+  //  add_sub_64(&timers[timer].stop, &timers[timer].start,
+  //  &timers[timer].value);
 
 #ifdef DEBUG_TIMER
-  fprintf(stderr, "Timer[%d] stop at 0x%llx, value 0x%llx\n",
-          timer, timers[timer].stop, timers[timer].value);
+  fprintf (stderr, "Timer[%d] stop at 0x%llx, value 0x%llx\n", timer,
+           timers[timer].stop, timers[timer].value);
 #endif
 }
 
-void reset_timer(int timer) {
+void
+reset_timer (int timer)
+{
   if (timer > NR_TIMERS)
     return;
   timers[timer].run = 0;
@@ -341,41 +361,47 @@ void reset_timer(int timer) {
   timers[timer].stop = 0;
   timers[timer].value = 0;
 #ifdef DEBUG_TIMER
-  fprintf(stderr, "Timer[%d] reset\n", timer);
+  fprintf (stderr, "Timer[%d] reset\n", timer);
 #endif
 }
 
 static word_64 zero = 0;
 
-word_64 get_timer(int timer) {
-  struct timeval  tv;
+word_64
+get_timer (int timer)
+{
+  struct timeval tv;
 #ifndef SOLARIS
   struct timezone tz;
 #endif
-  word_64         stop;
+  word_64 stop;
 
   if (timer > NR_TIMERS)
     return zero;
 
-  if (timers[timer].run) {
+  if (timers[timer].run)
+    {
 
 #ifdef SOLARIS
-    gettimeofday(&tv);
+      gettimeofday (&tv);
 #else
-    gettimeofday(&tv, &tz);
+      gettimeofday (&tv, &tz);
 #endif
-    tv.tv_sec -= systime_offset;
+      tv.tv_sec -= systime_offset;
 
-    if (timer == T1_TIMER) {
-      stop = (tv.tv_sec << 9);
-      stop += (tv.tv_usec / 15625) >> 3;
-    } else {
-      stop = tv.tv_sec;
-      stop <<= 13;
-      stop += (tv.tv_usec << 7) / 15625;
+      if (timer == T1_TIMER)
+        {
+          stop = (tv.tv_sec << 9);
+          stop += (tv.tv_usec / 15625) >> 3;
+        }
+      else
+        {
+          stop = tv.tv_sec;
+          stop <<= 13;
+          stop += (tv.tv_usec << 7) / 15625;
+        }
+      timers[timer].value += stop - timers[timer].start;
     }
-    timers[timer].value += stop - timers[timer].start;
-  }
 
   return timers[timer].value;
 }
@@ -391,24 +417,26 @@ word_64 get_timer(int timer) {
  *
  */
 
-t1_t2_ticks get_t1_t2(void) {
-  struct timeval  tv;
+t1_t2_ticks
+get_t1_t2 (void)
+{
+  struct timeval tv;
 #ifndef SOLARIS
   struct timezone tz;
 #endif
-  word_64         stop;
-  t1_t2_ticks   ticks;
-  word_64   access_time;
-  word_64   adj_time;
-  word_64   diff_time;
-  word_64   delta;
-  word_20   accesstime_loc;
-  int             i;
+  word_64 stop;
+  t1_t2_ticks ticks;
+  word_64 access_time;
+  word_64 adj_time;
+  word_64 diff_time;
+  word_64 delta;
+  word_20 accesstime_loc;
+  int i;
 
 #ifdef SOLARIS
-  gettimeofday(&tv);
+  gettimeofday (&tv);
 #else
-  gettimeofday(&tv, &tz);
+  gettimeofday (&tv, &tz);
 #endif
   tv.tv_sec -= systime_offset;
 
@@ -416,12 +444,14 @@ t1_t2_ticks get_t1_t2(void) {
     {
       stop = (tv.tv_sec << 9);
       stop += (tv.tv_usec / 15625) >> 3;
-      if (timers[T1_TIMER].start <=  stop)
+      if (timers[T1_TIMER].start <= stop)
         {
           timers[T1_TIMER].value += stop - timers[T1_TIMER].start;
-        } else {
-    fprintf(stderr, "clock running backwards\n");
-  }
+        }
+      else
+        {
+          fprintf (stderr, "clock running backwards\n");
+        }
     }
   ticks.t1_ticks = timers[T1_TIMER].value;
 
@@ -475,20 +505,20 @@ t1_t2_ticks get_t1_t2(void) {
   diff_time = saturn.timer2;
 
   adj_time = access_time - diff_time;
-  delta = abs(adj_time);
+  delta = abs (adj_time);
 
-  if (delta > 0x3c000)	/* Half a minute */
+  if (delta > 0x3c000) /* Half a minute */
     {
       set_0_time += adj_time;
       time_offset += adj_time;
       access_time -= adj_time;
 
 #ifdef DEBUG_TIMER_ADJUST
-      fprintf(stderr, "Time adjusted by ");
-      fprintf(stderr, "%lX", adj_time);
-      fprintf(stderr, " TICKS, Total offset ");
-      fprintf(stderr, "%lX", set_0_time);
-      fprintf(stderr, " TICKS\n");
+      fprintf (stderr, "Time adjusted by ");
+      fprintf (stderr, "%lX", adj_time);
+      fprintf (stderr, " TICKS, Total offset ");
+      fprintf (stderr, "%lX", set_0_time);
+      fprintf (stderr, " TICKS\n");
 #endif
     }
 

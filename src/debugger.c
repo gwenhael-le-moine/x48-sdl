@@ -65,8 +65,8 @@
 
 #include <stdio.h>
 #ifdef HAVE_READLINE
-# include <readline/readline.h>
-# include <readline/history.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #endif
 #include <stdlib.h>
 #include <unistd.h>
@@ -99,204 +99,128 @@ static char instr[100];
 /*
  * Pointers in the HP48sx ROM
  */
-#define DSKTOP_SX	0x70579
-#define DSKBOT_SX	0x7057e
+#define DSKTOP_SX 0x70579
+#define DSKBOT_SX 0x7057e
 /*
  * Pointers in the HP48gx ROM
  */
-#define DSKTOP_GX	0x806f8
-#define DSKBOT_GX	0x806fd
+#define DSKTOP_GX 0x806f8
+#define DSKBOT_GX 0x806fd
 
 /*
  * Breakpoint related stuff
  */
-#define BP_EXEC		1
-#define BP_READ		2
-#define BP_WRITE	4
-#define BP_RANGE	8
+#define BP_EXEC 1
+#define BP_READ 2
+#define BP_WRITE 4
+#define BP_RANGE 8
 
-#define MAX_BREAKPOINTS	32
+#define MAX_BREAKPOINTS 32
 int num_bkpts;
 
 struct breakpoint
-  {
-    word_20 addr;
-    word_20 end_addr;
-    int flags;
-  }
+{
+  word_20 addr;
+  word_20 end_addr;
+  int flags;
+}
 
 bkpt_tbl[MAX_BREAKPOINTS + 1];
 
 /*
  * command functions
  */
-static void do_break(int, char **);
-static void do_continue(int, char **);
-static void do_delete(int, char **);
-static void do_exit(int, char **);
-static void do_go(int, char **);
-static void do_help(int, char **);
-static void do_load(int, char **);
-static void do_mode(int, char **);
-static void do_quit(int, char **);
-static void do_regs(int, char **);
-static void do_save(int, char **);
-static void do_stack(int, char **);
-static void do_stat(int, char **);
-static void do_step(int, char **);
-static void do_ram(int, char **);
-static void do_reset(int, char **);
-static void do_rstk(int, char **);
+static void do_break (int, char **);
+static void do_continue (int, char **);
+static void do_delete (int, char **);
+static void do_exit (int, char **);
+static void do_go (int, char **);
+static void do_help (int, char **);
+static void do_load (int, char **);
+static void do_mode (int, char **);
+static void do_quit (int, char **);
+static void do_regs (int, char **);
+static void do_save (int, char **);
+static void do_stack (int, char **);
+static void do_stat (int, char **);
+static void do_step (int, char **);
+static void do_ram (int, char **);
+static void do_reset (int, char **);
+static void do_rstk (int, char **);
 
 struct cmd
-  {
-    const char *name;
-    void (*func)(int, char **);
-    const char *help;
-  }
-
-cmd_tbl[] =
 {
-  {
-    "break", do_break,
-    "break [address]            Set breakpoint at `address\' or show breakpoints"
-  }
-  ,
-  {
-    "b", do_break, 0
-  }
-  ,
+  const char *name;
+  void (*func) (int, char **);
+  const char *help;
+}
 
-  {
-    "cont", do_continue,
-    "cont                       Continue execution"
-  }
-  ,
-  {
-    "c", do_continue, 0
-  }
-  ,
+cmd_tbl[]
+    = { { "break", do_break,
+          "break [address]            Set breakpoint at `address\' or show "
+          "breakpoints" },
+        { "b", do_break, 0 },
 
-  {
-    "delete", do_delete,
-    "delete [all | n]           Delete breakpoint or watchpoint number `n\',\n                           all breakpoints, or current breakpoint"
-  }
-  ,
-  {
-    "d", do_delete, 0
-  }
-  ,
+        { "cont", do_continue,
+          "cont                       Continue execution" },
+        { "c", do_continue, 0 },
 
-  {
-    "exit", do_exit,
-    "exit                       Exit the emulator without saving"
-  }
-  ,
+        { "delete", do_delete,
+          "delete [all | n]           Delete breakpoint or watchpoint number "
+          "`n\',\n                           all breakpoints, or current "
+          "breakpoint" },
+        { "d", do_delete, 0 },
 
-  {
-    "go", do_go,
-    "go address                 Set PC to `address\'"
-  }
-  ,
+        { "exit", do_exit,
+          "exit                       Exit the emulator without saving" },
 
-  {
-    "help", do_help,
-    "help                       Display this information"
-  }
-  ,
-  {
-    "h", do_help, 0
-  }
-  ,
-  {
-    "?", do_help, 0
-  }
-  ,
+        { "go", do_go, "go address                 Set PC to `address\'" },
 
-  {
-    "load", do_load,
-    "load                       Load emulator-state from files"
-  }
-  ,
+        { "help", do_help,
+          "help                       Display this information" },
+        { "h", do_help, 0 },
+        { "?", do_help, 0 },
 
-  {
-    "mode", do_mode,
-    "mode [hp | class]          Show or set disassembler mode"
-  }
-  ,
+        { "load", do_load,
+          "load                       Load emulator-state from files" },
 
-  {
-    "quit", do_quit,
-    "quit                       Exit the emulator after saving its state"
-  }
-  ,
-  {
-    "q", do_quit, 0
-  }
-  ,
+        { "mode", do_mode,
+          "mode [hp | class]          Show or set disassembler mode" },
 
-  {
-    "ram", do_ram,
-    "ram                        Show RAM layout"
-  }
-  ,
+        { "quit", do_quit,
+          "quit                       Exit the emulator after saving its "
+          "state" },
+        { "q", do_quit, 0 },
 
-  {
-    "reg", do_regs,
-    "reg [register [hexvalue]]  Display or set register value"
-  }
-  ,
-  {
-    "r", do_regs, 0
-  }
-  ,
+        { "ram", do_ram, "ram                        Show RAM layout" },
 
-  {
-    "reset", do_reset,
-    "reset                      Set the HP48\'s PC to ZERO"
-  }
-  ,
+        { "reg", do_regs,
+          "reg [register [hexvalue]]  Display or set register value" },
+        { "r", do_regs, 0 },
 
-  {
-    "save", do_save,
-    "save                       Save emulator-state to files"
-  }
-  ,
+        { "reset", do_reset,
+          "reset                      Set the HP48\'s PC to ZERO" },
 
-  {
-    "stack", do_stack,
-    "stack                      Display RPL stack"
-  }
-  ,
+        { "save", do_save,
+          "save                       Save emulator-state to files" },
 
-  {
-    "stat", do_stat,
-    "stat                       Display statistics for the emulator"
-  }
-  ,
+        { "stack", do_stack, "stack                      Display RPL stack" },
 
-  {
-    "step", do_step,
-    "step [n]                   Step one or n Instruction(s)"
-  }
-  ,
-  {
-    "s", do_step, 0
-  }
-  ,
+        { "stat", do_stat,
+          "stat                       Display statistics for the emulator" },
 
-  {
-    "where", do_rstk,
-    "where                      Show ML return stack"
-  }
-  ,
+        { "step", do_step,
+          "step [n]                   Step one or n Instruction(s)" },
+        { "s", do_step, 0 },
 
-  {
-    0, 0, 0
-  }
-};
+        { "where", do_rstk,
+          "where                      Show ML return stack" },
 
-void init_debugger (void) {
+        { 0, 0, 0 } };
+
+void
+init_debugger (void)
+{
   int i;
 
   num_bkpts = 0;
@@ -305,7 +229,9 @@ void init_debugger (void) {
   exec_flags = 0;
 }
 
-int check_breakpoint (int type, word_20 addr) {
+int
+check_breakpoint (int type, word_20 addr)
+{
   struct breakpoint *bp;
   int i, n;
 
@@ -316,47 +242,49 @@ int check_breakpoint (int type, word_20 addr) {
     {
       i++;
       if (bp->flags == 0)
-  continue;
+        continue;
       n--;
       if (bp->flags & BP_RANGE && addr >= bp->addr && addr <= bp->end_addr)
-  {
-    goto hit_it;
-  }
+        {
+          goto hit_it;
+        }
       if (bp->flags & type && addr == bp->addr)
-  {
-  hit_it:
-    if (type == BP_READ)
-      {
-        printf ("%.5lX: Read watchpoint %d hit at %.5lX\n", saturn.PC,
-          i, addr);
-      }
-    else if (type == BP_WRITE)
-      {
-        printf ("%.5lX: Write watchpoint %d hit at %.5lX\n", saturn.PC,
-          i, addr);
-      }
-    else
-      {
-        printf ("Breakpoint %d hit at %.5lX\n", i, addr);
-      }
-    return 1;
-  }
+        {
+        hit_it:
+          if (type == BP_READ)
+            {
+              printf ("%.5lX: Read watchpoint %d hit at %.5lX\n", saturn.PC, i,
+                      addr);
+            }
+          else if (type == BP_WRITE)
+            {
+              printf ("%.5lX: Write watchpoint %d hit at %.5lX\n", saturn.PC,
+                      i, addr);
+            }
+          else
+            {
+              printf ("Breakpoint %d hit at %.5lX\n", i, addr);
+            }
+          return 1;
+        }
     }
   return 0;
 }
 
-char * read_str(char *str, int n, int fp) {
+char *
+read_str (char *str, int n, int fp)
+{
   int cc;
   int flags;
 
   while (1)
     {
-      cc = read(fp, str, n);
+      cc = read (fp, str, n);
       if (cc > 0)
         {
-    str[cc] = '\0';
+          str[cc] = '\0';
           return str;
-  }
+        }
       if (cc == 0)
         return NULL;
 
@@ -365,67 +293,73 @@ char * read_str(char *str, int n, int fp) {
 
       if (errno == EAGAIN)
         {
-          flags = fcntl(fp, F_GETFL, 0);
-          flags &= ~ O_NONBLOCK;
-          fcntl(fp, F_SETFL, flags);
+          flags = fcntl (fp, F_GETFL, 0);
+          flags &= ~O_NONBLOCK;
+          fcntl (fp, F_SETFL, flags);
           continue;
         }
       return NULL;
     }
-    /* not reached */
+  /* not reached */
 }
 
 #ifndef HAVE_READLINE
-char * readline(const char *prompt) {
+char *
+readline (const char *prompt)
+{
   char rl[81];
   char *nrl;
   if (prompt)
     {
-      printf("%s", prompt);
-      fflush(stdout);
+      printf ("%s", prompt);
+      fflush (stdout);
     }
-  nrl = read_str(rl, 80, 0);
+  nrl = read_str (rl, 80, 0);
   if (nrl)
     {
       int len;
       char *str;
 
-      len = strlen(nrl);
-      str = (char*)malloc(len + 1);
+      len = strlen (nrl);
+      str = (char *)malloc (len + 1);
 
-      if (nrl[len-1] == '\n')
+      if (nrl[len - 1] == '\n')
         {
-    nrl[len-1] = '\0';
-  }
+          nrl[len - 1] = '\0';
+        }
       if (NULL == str)
         {
-    fprintf(stderr, "Out of memory\n");
-    exit(-1);
+          fprintf (stderr, "Out of memory\n");
+          exit (-1);
         }
 
-      strcpy(str, nrl);
+      strcpy (str, nrl);
       nrl = str;
     }
   return nrl;
 }
 #endif
 
-static inline void str_to_upper (char *arg) {
+static inline void
+str_to_upper (char *arg)
+{
   int i;
 
   for (i = 0; i < strlen (arg); i++)
     {
       if ('a' <= arg[i] && arg[i] <= 'z')
-  {
-    arg[i] = (char) ((int) arg[i] - (int) 'a' + (int) 'A');
-  }
+        {
+          arg[i] = (char)((int)arg[i] - (int)'a' + (int)'A');
+        }
     }
 }
 
-static int decode_dec (int *num, char *arg) {
+static int
+decode_dec (int *num, char *arg)
+{
   int i;
 
-  if (arg == (char *) 0)
+  if (arg == (char *)0)
     {
       printf ("Command requires an argument.\n");
       return 0;
@@ -436,23 +370,25 @@ static int decode_dec (int *num, char *arg) {
     {
       *num *= 10;
       if ('0' <= arg[i] && arg[i] <= '9')
-  {
-    *num += ((int) arg[i] - (int) '0');
-  }
+        {
+          *num += ((int)arg[i] - (int)'0');
+        }
       else
-  {
-    *num = 0;
-    printf ("Not a number: %s.\n", arg);
-    return 0;
-  }
+        {
+          *num = 0;
+          printf ("Not a number: %s.\n", arg);
+          return 0;
+        }
     }
   return 1;
 }
 
-static int decode_20 (word_20 * addr, char *arg) {
+static int
+decode_20 (word_20 *addr, char *arg)
+{
   int i;
 
-  if (arg == (char *) 0)
+  if (arg == (char *)0)
     {
       printf ("Command requires an argument.\n");
       return 0;
@@ -463,28 +399,30 @@ static int decode_20 (word_20 * addr, char *arg) {
     {
       *addr <<= 4;
       if ('0' <= arg[i] && arg[i] <= '9')
-  {
-    *addr |= ((int) arg[i] - (int) '0');
-  }
+        {
+          *addr |= ((int)arg[i] - (int)'0');
+        }
       else if ('A' <= arg[i] && arg[i] <= 'F')
-  {
-    *addr |= ((int) arg[i] - (int) 'A' + 10);
-  }
+        {
+          *addr |= ((int)arg[i] - (int)'A' + 10);
+        }
       else
-  {
-    *addr = 0;
-    printf ("Not a number: %s.\n", arg);
-    return 0;
-  }
+        {
+          *addr = 0;
+          printf ("Not a number: %s.\n", arg);
+          return 0;
+        }
       *addr &= 0xfffff;
     }
   return 1;
 }
 
-static int decode_32 (word_32 * addr, char *arg) {
+static int
+decode_32 (word_32 *addr, char *arg)
+{
   int i;
 
-  if (arg == (char *) 0)
+  if (arg == (char *)0)
     {
       printf ("Command requires an argument.\n");
       return 0;
@@ -495,27 +433,29 @@ static int decode_32 (word_32 * addr, char *arg) {
     {
       *addr <<= 4;
       if ('0' <= arg[i] && arg[i] <= '9')
-  {
-    *addr |= ((int) arg[i] - (int) '0');
-  }
+        {
+          *addr |= ((int)arg[i] - (int)'0');
+        }
       else if ('A' <= arg[i] && arg[i] <= 'F')
-  {
-    *addr |= ((int) arg[i] - (int) 'A' + 10);
-  }
+        {
+          *addr |= ((int)arg[i] - (int)'A' + 10);
+        }
       else
-  {
-    *addr = 0;
-    printf ("Not a number: %s.\n", arg);
-    return 0;
-  }
+        {
+          *addr = 0;
+          printf ("Not a number: %s.\n", arg);
+          return 0;
+        }
     }
   return 1;
 }
 
-static int decode_64 (word_64 * addr, char *arg) {
+static int
+decode_64 (word_64 *addr, char *arg)
+{
   int i;
 
-  if (arg == (char *) 0)
+  if (arg == (char *)0)
     {
       printf ("Command requires an argument.\n");
       return 0;
@@ -526,19 +466,19 @@ static int decode_64 (word_64 * addr, char *arg) {
     {
       *addr <<= 4;
       if ('0' <= arg[i] && arg[i] <= '9')
-  {
-    *addr |= ((int) arg[i] - (int) '0');
-  }
+        {
+          *addr |= ((int)arg[i] - (int)'0');
+        }
       else if ('A' <= arg[i] && arg[i] <= 'F')
-  {
-    *addr |= ((int) arg[i] - (int) 'A' + 10);
-  }
+        {
+          *addr |= ((int)arg[i] - (int)'A' + 10);
+        }
       else
-  {
-    *addr = 0;
-    printf ("Not a number: %s.\n", arg);
-    return 0;
-  }
+        {
+          *addr = 0;
+          printf ("Not a number: %s.\n", arg);
+          return 0;
+        }
     }
 #else
   addr->lo = addr->hi = 0;
@@ -548,25 +488,27 @@ static int decode_64 (word_64 * addr, char *arg) {
       addr->hi |= ((addr->lo >> 28) & 0x0f);
       addr->lo <<= 4;
       if ('0' <= arg[i] && arg[i] <= '9')
-  {
-    addr->lo |= ((int) arg[i] - (int) '0');
-  }
+        {
+          addr->lo |= ((int)arg[i] - (int)'0');
+        }
       else if ('A' <= arg[i] && arg[i] <= 'F')
-  {
-    addr->lo |= ((int) arg[i] - (int) 'A' + 10);
-  }
+        {
+          addr->lo |= ((int)arg[i] - (int)'A' + 10);
+        }
       else
-  {
-    addr->hi = addr->lo = 0;
-    printf ("Not a number: %s.\n", arg);
-    return 0;
-  }
+        {
+          addr->hi = addr->lo = 0;
+          printf ("Not a number: %s.\n", arg);
+          return 0;
+        }
     }
 #endif
   return 1;
 }
 
-char * str_nibbles (word_20 addr, int n) {
+char *
+str_nibbles (word_20 addr, int n)
+{
   static char str[1025];
   char *cp;
   int i;
@@ -587,7 +529,9 @@ char * str_nibbles (word_20 addr, int n) {
   return str;
 }
 
-static int confirm (const char *prompt) {
+static int
+confirm (const char *prompt)
+{
   char ans[80];
 
   printf ("%s (y or n) ", prompt);
@@ -611,143 +555,155 @@ static int confirm (const char *prompt) {
     }
 }
 
-static void do_break (int argc, char **argv) {
+static void
+do_break (int argc, char **argv)
+{
   int i;
   word_20 addr;
 
   if (argc == 1)
     {
       for (i = 0; i < MAX_BREAKPOINTS; i++)
-  {
-    if (bkpt_tbl[i].flags == 0)
-      continue;
-    if (bkpt_tbl[i].flags == BP_EXEC)
-      {
-        printf ("Breakpoint %d at 0x%.5lX\n", i + 1, bkpt_tbl[i].addr);
-      }
-    else if (bkpt_tbl[i].flags == BP_RANGE)
-      {
-        printf ("Range watchpoint %d at 0x%.5lX - 0x%.5lX\n", i + 1,
-          bkpt_tbl[i].addr, bkpt_tbl[i].end_addr);
-      }
-    else
-      {
-        printf ("Watchpoint %d at 0x%.5lX\n", i + 1, bkpt_tbl[i].addr);
-      }
-  }
+        {
+          if (bkpt_tbl[i].flags == 0)
+            continue;
+          if (bkpt_tbl[i].flags == BP_EXEC)
+            {
+              printf ("Breakpoint %d at 0x%.5lX\n", i + 1, bkpt_tbl[i].addr);
+            }
+          else if (bkpt_tbl[i].flags == BP_RANGE)
+            {
+              printf ("Range watchpoint %d at 0x%.5lX - 0x%.5lX\n", i + 1,
+                      bkpt_tbl[i].addr, bkpt_tbl[i].end_addr);
+            }
+          else
+            {
+              printf ("Watchpoint %d at 0x%.5lX\n", i + 1, bkpt_tbl[i].addr);
+            }
+        }
     }
   else
     {
       str_to_upper (argv[1]);
       if (!decode_20 (&addr, argv[1]))
-  {
-    return;
-  }
+        {
+          return;
+        }
       for (i = 0; i < MAX_BREAKPOINTS; i++)
-  {
-    if (bkpt_tbl[i].flags == 0)
-      {
-        bkpt_tbl[i].flags = BP_EXEC;
-        bkpt_tbl[i].addr = addr;
-        printf ("Breakpoint %d at 0x%.5lX\n", i + 1, bkpt_tbl[i].addr);
-        num_bkpts++;
-        return;
-      }
-  }
+        {
+          if (bkpt_tbl[i].flags == 0)
+            {
+              bkpt_tbl[i].flags = BP_EXEC;
+              bkpt_tbl[i].addr = addr;
+              printf ("Breakpoint %d at 0x%.5lX\n", i + 1, bkpt_tbl[i].addr);
+              num_bkpts++;
+              return;
+            }
+        }
       printf ("Breakpoint table full\n");
     }
 }
 
-static void do_continue (int argc, char **argv) {
+static void
+do_continue (int argc, char **argv)
+{
   continue_flag = 1;
 }
 
-static void do_delete (int argc, char **argv) {
+static void
+do_delete (int argc, char **argv)
+{
   int num;
 
   if (argc == 1)
     {
       for (num = 0; num < MAX_BREAKPOINTS; num++)
-  {
-    if (bkpt_tbl[num].addr == saturn.PC)
+        {
+          if (bkpt_tbl[num].addr == saturn.PC)
             {
-        if (bkpt_tbl[num].flags == BP_EXEC)
-    {
-      printf ("Breakpoint %d at 0x%.5lX deleted.\n",
-        num + 1, bkpt_tbl[num].addr);
-    }
-        else if (bkpt_tbl[num].flags == BP_RANGE)
-    {
-      printf ("Range watchpoint %d at 0x%.5lX - 0x%.5lX deleted.\n",
-           num + 1, bkpt_tbl[num].addr, bkpt_tbl[num].end_addr);
-    }
-        else if (bkpt_tbl[num].flags)
-    {
-      printf ("Watchpoint %d at 0x%.5lX deleted.\n",
-        num + 1, bkpt_tbl[num].addr);
-    }
-        num_bkpts--;
-        bkpt_tbl[num].addr = 0;
-        bkpt_tbl[num].flags = 0;
+              if (bkpt_tbl[num].flags == BP_EXEC)
+                {
+                  printf ("Breakpoint %d at 0x%.5lX deleted.\n", num + 1,
+                          bkpt_tbl[num].addr);
+                }
+              else if (bkpt_tbl[num].flags == BP_RANGE)
+                {
+                  printf (
+                      "Range watchpoint %d at 0x%.5lX - 0x%.5lX deleted.\n",
+                      num + 1, bkpt_tbl[num].addr, bkpt_tbl[num].end_addr);
+                }
+              else if (bkpt_tbl[num].flags)
+                {
+                  printf ("Watchpoint %d at 0x%.5lX deleted.\n", num + 1,
+                          bkpt_tbl[num].addr);
+                }
+              num_bkpts--;
+              bkpt_tbl[num].addr = 0;
+              bkpt_tbl[num].flags = 0;
             }
-  }
+        }
     }
   else
     {
       str_to_upper (argv[1]);
       if (!strcmp ("ALL", argv[1]))
-  {
-    for (num = 0; num < MAX_BREAKPOINTS; num++)
-      {
-        bkpt_tbl[num].addr = 0;
-        bkpt_tbl[num].flags = 0;
-      }
-    num_bkpts = 0;
-    printf ("All breakpoints deleted.\n");
-  }
+        {
+          for (num = 0; num < MAX_BREAKPOINTS; num++)
+            {
+              bkpt_tbl[num].addr = 0;
+              bkpt_tbl[num].flags = 0;
+            }
+          num_bkpts = 0;
+          printf ("All breakpoints deleted.\n");
+        }
       else
-  {
-    if (decode_dec (&num, argv[1]))
-      {
-        if (num < 1 || num > MAX_BREAKPOINTS)
-    {
-      printf ("Breakpoint %d out of range.\n", num);
-      return;
-    }
-        num -= 1;
-        if (bkpt_tbl[num].flags == BP_EXEC)
-    {
-      printf ("Breakpoint %d at 0x%.5lX deleted.\n",
-        num + 1, bkpt_tbl[num].addr);
-    }
-        else if (bkpt_tbl[num].flags == BP_RANGE)
-    {
-      printf ("Range watchpoint %d at 0x%.5lX - 0x%.5lX deleted.\n",
-           num + 1, bkpt_tbl[num].addr, bkpt_tbl[num].end_addr);
-    }
-        else if (bkpt_tbl[num].flags)
-    {
-      printf ("Watchpoint %d at 0x%.5lX deleted.\n",
-        num + 1, bkpt_tbl[num].addr);
-    }
-        num_bkpts--;
-        bkpt_tbl[num].addr = 0;
-        bkpt_tbl[num].flags = 0;
-      }
-  }
+        {
+          if (decode_dec (&num, argv[1]))
+            {
+              if (num < 1 || num > MAX_BREAKPOINTS)
+                {
+                  printf ("Breakpoint %d out of range.\n", num);
+                  return;
+                }
+              num -= 1;
+              if (bkpt_tbl[num].flags == BP_EXEC)
+                {
+                  printf ("Breakpoint %d at 0x%.5lX deleted.\n", num + 1,
+                          bkpt_tbl[num].addr);
+                }
+              else if (bkpt_tbl[num].flags == BP_RANGE)
+                {
+                  printf (
+                      "Range watchpoint %d at 0x%.5lX - 0x%.5lX deleted.\n",
+                      num + 1, bkpt_tbl[num].addr, bkpt_tbl[num].end_addr);
+                }
+              else if (bkpt_tbl[num].flags)
+                {
+                  printf ("Watchpoint %d at 0x%.5lX deleted.\n", num + 1,
+                          bkpt_tbl[num].addr);
+                }
+              num_bkpts--;
+              bkpt_tbl[num].addr = 0;
+              bkpt_tbl[num].flags = 0;
+            }
+        }
     }
 }
 
-static void do_exit (int argc, char **argv) {
+static void
+do_exit (int argc, char **argv)
+{
   if (confirm ("Exit the emulator WITHOUT saving its state?"))
     {
       printf ("Exit.\n");
-      //XCloseDisplay(dpy);
+      // XCloseDisplay(dpy);
       exit (0);
     }
 }
 
-static void do_go (int argc, char **argv) {
+static void
+do_go (int argc, char **argv)
+{
   word_20 addr;
 
   str_to_upper (argv[1]);
@@ -758,19 +714,23 @@ static void do_go (int argc, char **argv) {
     }
 }
 
-static void do_help (int argc, char **argv) {
+static void
+do_help (int argc, char **argv)
+{
   int i;
 
   for (i = 0; cmd_tbl[i].name; i++)
     {
       if (cmd_tbl[i].help)
-  {
-    printf ("%s.\n", cmd_tbl[i].help);
-  }
+        {
+          printf ("%s.\n", cmd_tbl[i].help);
+        }
     }
 }
 
-static void do_load (int argc, char **argv) {
+static void
+do_load (int argc, char **argv)
+{
   saturn_t tmp_saturn;
   device_t tmp_device;
 
@@ -780,100 +740,110 @@ static void do_load (int argc, char **argv) {
       memcpy (&tmp_device, &device, sizeof (device));
       memset (&saturn, 0, sizeof (saturn));
       if (read_files ())
-  {
-    printf ("Loading done.\n");
-    enter_debugger &= ~ILLEGAL_INSTRUCTION;
-    if (tmp_saturn.rom)
-      {
-        free (tmp_saturn.rom);
-      }
-    if (tmp_saturn.ram)
-      {
-        free (tmp_saturn.ram);
-      }
-    if (tmp_saturn.port1)
-      {
-        free (tmp_saturn.port1);
-      }
-    if (tmp_saturn.port2)
-      {
-        free (tmp_saturn.port2);
-      }
-    init_display ();
-    update_display ();
-  }
+        {
+          printf ("Loading done.\n");
+          enter_debugger &= ~ILLEGAL_INSTRUCTION;
+          if (tmp_saturn.rom)
+            {
+              free (tmp_saturn.rom);
+            }
+          if (tmp_saturn.ram)
+            {
+              free (tmp_saturn.ram);
+            }
+          if (tmp_saturn.port1)
+            {
+              free (tmp_saturn.port1);
+            }
+          if (tmp_saturn.port2)
+            {
+              free (tmp_saturn.port2);
+            }
+          init_display ();
+          update_display ();
+        }
       else
-  {
-    printf ("Loading emulator-state from files failed.\n");
-    if (saturn.rom)
-      {
-        free (saturn.rom);
-      }
-    if (saturn.ram)
-      {
-        free (saturn.ram);
-      }
-    if (saturn.port1)
-      {
-        free (saturn.port1);
-      }
-    if (saturn.port2)
-      {
-        free (saturn.port2);
-      }
-    memcpy (&saturn, &tmp_saturn, sizeof (saturn));
-    memcpy (&device, &tmp_device, sizeof (device));
-  }
+        {
+          printf ("Loading emulator-state from files failed.\n");
+          if (saturn.rom)
+            {
+              free (saturn.rom);
+            }
+          if (saturn.ram)
+            {
+              free (saturn.ram);
+            }
+          if (saturn.port1)
+            {
+              free (saturn.port1);
+            }
+          if (saturn.port2)
+            {
+              free (saturn.port2);
+            }
+          memcpy (&saturn, &tmp_saturn, sizeof (saturn));
+          memcpy (&device, &tmp_device, sizeof (device));
+        }
     }
 }
 
-static void do_mode (int argc, char **argv) {
+static void
+do_mode (int argc, char **argv)
+{
   if (argc < 2)
     {
-      printf ("Disassembler uses %s mnemonics.\n", mode_name[disassembler_mode]);
+      printf ("Disassembler uses %s mnemonics.\n",
+              mode_name[disassembler_mode]);
     }
   else
     {
       str_to_upper (argv[1]);
       if (!strcmp ("HP", argv[1]))
-  {
-    disassembler_mode = HP_MNEMONICS;
-  }
+        {
+          disassembler_mode = HP_MNEMONICS;
+        }
       else if (!strcmp ("CLASS", argv[1]))
-  {
-    disassembler_mode = CLASS_MNEMONICS;
-  }
+        {
+          disassembler_mode = CLASS_MNEMONICS;
+        }
       else
-  {
-    printf ("Unknown disassembler mode %s. Try \"help\".\n", argv[1]);
-  }
+        {
+          printf ("Unknown disassembler mode %s. Try \"help\".\n", argv[1]);
+        }
     }
 }
 
-static void do_quit (int argc, char **argv) {
+static void
+do_quit (int argc, char **argv)
+{
   if (confirm ("Quit the emulator and save its state?"))
     {
       printf ("Exit.\n");
       exit_emulator ();
-      //XCloseDisplay(dpy);
+      // XCloseDisplay(dpy);
       exit (0);
     }
 }
 
-static void set_reg (word_64 val, int n, unsigned char *r) {
+static void
+set_reg (word_64 val, int n, unsigned char *r)
+{
   int i;
 
   for (i = 0; i < n; i++)
     {
 #ifdef SIMPLE_64
-      r[i] = (unsigned char) ((val & (0xf << (4 * i))) >> (4 * i));
+      r[i] = (unsigned char)((val & (0xf << (4 * i))) >> (4 * i));
 #else
-      r[i] = (unsigned char) (((i < 8?val.lo:val.hi) & (0xf << (4 * i))) >> (4 * i));
+      r[i] = (unsigned char)(((i < 8 ? val.lo : val.hi) & (0xf << (4 * i)))
+                             >> (4 * i));
 #endif
     }
 }
 
-static void dump_reg (const char *reg, int n, unsigned char *r) {
+static void
+dump_reg (const char *reg, int n, unsigned char *r)
+{
   int i;
 
   printf ("%s:\t", reg);
@@ -884,8 +854,9 @@ static void dump_reg (const char *reg, int n, unsigned char *r) {
   printf ("\n");
 }
 
-
-static void set_st (word_64 val) {
+static void
+set_st (word_64 val)
+{
   int i;
 
   for (i = 0; i < 16; i++)
@@ -896,7 +867,9 @@ static void set_st (word_64 val) {
 #endif
 }
 
-static void dump_st (void) {
+static void
+dump_st (void)
+{
   int i;
   int val;
 
@@ -910,13 +883,13 @@ static void dump_st (void) {
   for (i = NR_PSTAT - 1; i > 0; i--)
     {
       if (saturn.PSTAT[i])
-  {
-    printf ("%.1X ", i);
-  }
+        {
+          printf ("%.1X ", i);
+        }
       else
-  {
-    printf ("- ");
-  }
+        {
+          printf ("- ");
+        }
     }
   if (saturn.PSTAT[0])
     {
@@ -928,7 +901,9 @@ static void dump_st (void) {
     }
 }
 
-static void set_hst (word_64 val) {
+static void
+set_hst (word_64 val)
+{
   saturn.XM = 0;
   saturn.SB = 0;
   saturn.SR = 0;
@@ -954,7 +929,9 @@ static void set_hst (word_64 val) {
 #endif
 }
 
-static void dump_hst (void) {
+static void
+dump_hst (void)
+{
   short hst = 0;
   if (saturn.XM != 0)
     hst |= 1;
@@ -964,76 +941,68 @@ static void dump_hst (void) {
     hst |= 3;
   if (saturn.MP != 0)
     hst |= 4;
-  printf ("   HST:\t%.1X    (%s%s%s%s)\n", hst,
-          saturn.MP ? "MP " : "-- ", saturn.SR ? "SR " : "-- ",
-          saturn.SB ? "SB " : "-- ", saturn.XM ? "XM" : "--");
+  printf ("   HST:\t%.1X    (%s%s%s%s)\n", hst, saturn.MP ? "MP " : "-- ",
+          saturn.SR ? "SR " : "-- ", saturn.SB ? "SB " : "-- ",
+          saturn.XM ? "XM" : "--");
 }
 
-static const char *mctl_str_gx[] = {
-  "MMIO       ",
-  "SysRAM     ",
-  "Bank Switch",
-  "Port 1     ",
-  "Port 2     ",
-  "SysROM     "
-};
+static const char *mctl_str_gx[]
+    = { "MMIO       ", "SysRAM     ", "Bank Switch",
+        "Port 1     ", "Port 2     ", "SysROM     " };
 
-static const char *mctl_str_sx[] = {
-  "MMIO  ",
-  "SysRAM",
-  "Port 1",
-  "Port 2",
-  "Extra ",
-  "SysROM"
-};
+static const char *mctl_str_sx[]
+    = { "MMIO  ", "SysRAM", "Port 1", "Port 2", "Extra ", "SysROM" };
 
-static void do_ram (int argc, char **argv) {
+static void
+do_ram (int argc, char **argv)
+{
   int i;
 
   for (i = 0; i < 5; i++)
     {
-      printf("%s ", opt_gx ? mctl_str_gx[i] : mctl_str_sx[i]);
+      printf ("%s ", opt_gx ? mctl_str_gx[i] : mctl_str_sx[i]);
       if (saturn.mem_cntl[i].unconfigured)
-        printf("unconfigured\n");
+        printf ("unconfigured\n");
+      else if (i == 0)
+        printf ("configured to 0x%.5lx\n", saturn.mem_cntl[i].config[0]);
       else
-        if (i == 0)
-          printf("configured to 0x%.5lx\n", saturn.mem_cntl[i].config[0]);
-        else
-          printf("configured to 0x%.5lX - 0x%.5lX\n",
-                 saturn.mem_cntl[i].config[0],
-                 (saturn.mem_cntl[i].config[0] | ~saturn.mem_cntl[i].config[1])
-                 & 0xfffff);
+        printf ("configured to 0x%.5lX - 0x%.5lX\n",
+                saturn.mem_cntl[i].config[0],
+                (saturn.mem_cntl[i].config[0] | ~saturn.mem_cntl[i].config[1])
+                    & 0xfffff);
     }
   if (opt_gx)
-    printf("Port 2      switched to bank %d\n", saturn.bank_switch);
+    printf ("Port 2      switched to bank %d\n", saturn.bank_switch);
 }
 
-static void do_regs (int argc, char **argv) {
+static void
+do_regs (int argc, char **argv)
+{
   int i;
   word_64 val;
 
   if (argc < 2)
     {
       /*
-     * dump all registers
-     */
+       * dump all registers
+       */
       printf ("CPU is in %s mode. Registers:\n",
-        saturn.hexmode == HEX ? "HEX" : "DEC");
+              saturn.hexmode == HEX ? "HEX" : "DEC");
       dump_reg ("     A", 16, saturn.A);
       dump_reg ("     B", 16, saturn.B);
       dump_reg ("     C", 16, saturn.C);
       dump_reg ("     D", 16, saturn.D);
       printf ("    D0:\t%.5lX ->", saturn.D0);
       for (i = 0; i < 20; i += 5)
-  {
-    printf (" %s", str_nibbles (saturn.D0 + i, 5));
-  }
+        {
+          printf (" %s", str_nibbles (saturn.D0 + i, 5));
+        }
       printf ("\n");
       printf ("    D1:\t%.5lX ->", saturn.D1);
       for (i = 0; i < 20; i += 5)
-  {
-    printf (" %s", str_nibbles (saturn.D1 + i, 5));
-  }
+        {
+          printf (" %s", str_nibbles (saturn.D1 + i, 5));
+        }
       printf ("\n");
       printf ("     P:\t%.1X\n", saturn.P);
       disassemble (saturn.PC, instr);
@@ -1052,11 +1021,11 @@ static void do_regs (int argc, char **argv) {
   else if (argc == 2)
     {
       /*
-     * dump specified register
-     */
+       * dump specified register
+       */
       str_to_upper (argv[1]);
       if (!strcmp ("A", argv[1]))
-  {
+        {
           dump_reg ("     A", 16, saturn.A);
         }
       else if (!strcmp ("B", argv[1]))
@@ -1070,36 +1039,36 @@ static void do_regs (int argc, char **argv) {
       else if (!strcmp ("D", argv[1]))
         {
           dump_reg ("     D", 16, saturn.D);
-  }
+        }
       else if (!strcmp ("D0", argv[1]))
-  {
-    printf ("    D0:\t%.5lX ->", saturn.D0);
-    for (i = 0; i < 20; i += 5)
-      {
-        printf (" %s", str_nibbles (saturn.D0 + i, 5));
-      }
-    printf ("\n");
-  }
+        {
+          printf ("    D0:\t%.5lX ->", saturn.D0);
+          for (i = 0; i < 20; i += 5)
+            {
+              printf (" %s", str_nibbles (saturn.D0 + i, 5));
+            }
+          printf ("\n");
+        }
       else if (!strcmp ("D1", argv[1]))
-  {
-    printf ("    D1:\t%.5lX ->", saturn.D1);
-    for (i = 0; i < 20; i += 5)
-      {
-        printf (" %s", str_nibbles (saturn.D1 + i, 5));
-      }
-    printf ("\n");
-  }
+        {
+          printf ("    D1:\t%.5lX ->", saturn.D1);
+          for (i = 0; i < 20; i += 5)
+            {
+              printf (" %s", str_nibbles (saturn.D1 + i, 5));
+            }
+          printf ("\n");
+        }
       else if (!strcmp ("P", argv[1]))
-  {
-    printf ("     P:\t%.1X\n", saturn.P);
-  }
+        {
+          printf ("     P:\t%.1X\n", saturn.P);
+        }
       else if (!strcmp ("PC", argv[1]))
-  {
-    disassemble (saturn.PC, instr);
-    printf ("    PC:\t%.5lX -> %s\n", saturn.PC, instr);
-  }
+        {
+          disassemble (saturn.PC, instr);
+          printf ("    PC:\t%.5lX -> %s\n", saturn.PC, instr);
+        }
       else if (!strcmp ("R0", argv[1]))
-  {
+        {
           dump_reg ("    R0", 16, saturn.R0);
         }
       else if (!strcmp ("R1", argv[1]))
@@ -1125,39 +1094,39 @@ static void do_regs (int argc, char **argv) {
       else if (!strcmp ("OUT", argv[1]))
         {
           dump_reg ("   OUT", 3, saturn.OUT);
-  }
+        }
       else if (!strcmp ("CARRY", argv[1]))
-  {
-    printf (" CARRY:\t%.1d\n", saturn.CARRY);
-  }
+        {
+          printf (" CARRY:\t%.1d\n", saturn.CARRY);
+        }
       else if (!strcmp ("CY", argv[1]))
-  {
-    printf (" CARRY:\t%.1d\n", saturn.CARRY);
-  }
+        {
+          printf (" CARRY:\t%.1d\n", saturn.CARRY);
+        }
       else if (!strcmp ("ST", argv[1]))
-  {
-    dump_st ();
-  }
+        {
+          dump_st ();
+        }
       else if (!strcmp ("HST", argv[1]))
-  {
-    dump_hst ();
-  }
+        {
+          dump_hst ();
+        }
       else
-  {
-    printf ("No Register %s in CPU.\n", argv[1]);
-  }
+        {
+          printf ("No Register %s in CPU.\n", argv[1]);
+        }
     }
   else
     {
       /*
-     * set specified register
-     */
+       * set specified register
+       */
       str_to_upper (argv[1]);
       str_to_upper (argv[2]);
       if (decode_64 (&val, argv[2]))
-  {
-    if (!strcmp ("A", argv[1]))
-      {
+        {
+          if (!strcmp ("A", argv[1]))
+            {
               set_reg (val, 16, saturn.A);
               dump_reg ("     A", 16, saturn.A);
             }
@@ -1175,56 +1144,56 @@ static void do_regs (int argc, char **argv) {
             {
               set_reg (val, 16, saturn.D);
               dump_reg ("     D", 16, saturn.D);
-      }
-    else if (!strcmp ("D0", argv[1]))
-      {
+            }
+          else if (!strcmp ("D0", argv[1]))
+            {
 #ifdef SIMPLE_64
-        saturn.D0 = (word_20)(val & 0xfffff);
+              saturn.D0 = (word_20)(val & 0xfffff);
 #else
-        saturn.D0 = (word_20)(val.lo & 0xfffff);
+              saturn.D0 = (word_20)(val.lo & 0xfffff);
 #endif
-        printf ("    D0:\t%.5lX ->", saturn.D0);
-        for (i = 0; i < 20; i += 5)
-    {
-      printf (" %s", str_nibbles (saturn.D0 + i, 5));
-    }
-        printf ("\n");
-      }
-    else if (!strcmp ("D1", argv[1]))
-      {
+              printf ("    D0:\t%.5lX ->", saturn.D0);
+              for (i = 0; i < 20; i += 5)
+                {
+                  printf (" %s", str_nibbles (saturn.D0 + i, 5));
+                }
+              printf ("\n");
+            }
+          else if (!strcmp ("D1", argv[1]))
+            {
 #ifdef SIMPLE_64
-        saturn.D1 = (word_20)(val & 0xfffff);
+              saturn.D1 = (word_20)(val & 0xfffff);
 #else
-        saturn.D1 = (word_20)(val.lo & 0xfffff);
+              saturn.D1 = (word_20)(val.lo & 0xfffff);
 #endif
-        printf ("    D1:\t%.5lX ->", saturn.D1);
-        for (i = 0; i < 20; i += 5)
-    {
-      printf (" %s", str_nibbles (saturn.D1 + i, 5));
-    }
-        printf ("\n");
-      }
-    else if (!strcmp ("P", argv[1]))
-      {
+              printf ("    D1:\t%.5lX ->", saturn.D1);
+              for (i = 0; i < 20; i += 5)
+                {
+                  printf (" %s", str_nibbles (saturn.D1 + i, 5));
+                }
+              printf ("\n");
+            }
+          else if (!strcmp ("P", argv[1]))
+            {
 #ifdef SIMPLE_64
-        saturn.P = (word_4)(val & 0xf);
+              saturn.P = (word_4)(val & 0xf);
 #else
-        saturn.P = (word_4)(val.lo & 0xf);
+              saturn.P = (word_4)(val.lo & 0xf);
 #endif
-        printf ("     P:\t%.1X\n", saturn.P);
-      }
-    else if (!strcmp ("PC", argv[1]))
-      {
+              printf ("     P:\t%.1X\n", saturn.P);
+            }
+          else if (!strcmp ("PC", argv[1]))
+            {
 #ifdef SIMPLE_64
-        saturn.PC = (word_20)(val & 0xfffff);
+              saturn.PC = (word_20)(val & 0xfffff);
 #else
-        saturn.PC = (word_20)(val.lo & 0xfffff);
+              saturn.PC = (word_20)(val.lo & 0xfffff);
 #endif
-        disassemble (saturn.PC, instr);
-        printf ("    PC:\t%.5lX -> %s\n", saturn.PC, instr);
-      }
-    else if (!strcmp ("R0", argv[1]))
-      {
+              disassemble (saturn.PC, instr);
+              printf ("    PC:\t%.5lX -> %s\n", saturn.PC, instr);
+            }
+          else if (!strcmp ("R0", argv[1]))
+            {
               set_reg (val, 16, saturn.R0);
               dump_reg ("    R0", 16, saturn.R0);
             }
@@ -1257,44 +1226,46 @@ static void do_regs (int argc, char **argv) {
             {
               set_reg (val, 3, saturn.OUT);
               dump_reg ("   OUT", 3, saturn.OUT);
-      }
-    else if (!strcmp ("CARRY", argv[1]))
-      {
+            }
+          else if (!strcmp ("CARRY", argv[1]))
+            {
 #ifdef SIMPLE_64
-        saturn.CARRY = (word_1)(val & 0x1);
+              saturn.CARRY = (word_1)(val & 0x1);
 #else
-        saturn.CARRY = (word_1)(val.lo & 0x1);
+              saturn.CARRY = (word_1)(val.lo & 0x1);
 #endif
-        printf (" CARRY:\t%.1d\n", saturn.CARRY);
-      }
-    else if (!strcmp ("CY", argv[1]))
-      {
+              printf (" CARRY:\t%.1d\n", saturn.CARRY);
+            }
+          else if (!strcmp ("CY", argv[1]))
+            {
 #ifdef SIMPLE_64
-        saturn.CARRY = (word_1)(val & 0x1);
+              saturn.CARRY = (word_1)(val & 0x1);
 #else
-        saturn.CARRY = (word_1)(val.lo & 0x1);
+              saturn.CARRY = (word_1)(val.lo & 0x1);
 #endif
-        printf (" CARRY:\t%.1d\n", saturn.CARRY);
-      }
-    else if (!strcmp ("ST", argv[1]))
-      {
-        set_st (val);
-        dump_st ();
-      }
-    else if (!strcmp ("HST", argv[1]))
-      {
-        set_hst (val);
-        dump_hst ();
-      }
-    else
-      {
-        printf ("No Register %s in CPU.\n", argv[1]);
-      }
-  }
+              printf (" CARRY:\t%.1d\n", saturn.CARRY);
+            }
+          else if (!strcmp ("ST", argv[1]))
+            {
+              set_st (val);
+              dump_st ();
+            }
+          else if (!strcmp ("HST", argv[1]))
+            {
+              set_hst (val);
+              dump_hst ();
+            }
+          else
+            {
+              printf ("No Register %s in CPU.\n", argv[1]);
+            }
+        }
     }
 }
 
-static void do_save (int argc, char **argv) {
+static void
+do_save (int argc, char **argv)
+{
   if (write_files ())
     {
       printf ("Saving done.\n");
@@ -1305,18 +1276,21 @@ static void do_save (int argc, char **argv) {
     }
 }
 
-struct se {
-  int        se_n;
-  word_20    se_p;
+struct se
+{
+  int se_n;
+  word_20 se_p;
   struct se *se_next;
 };
 
-char * get_stack (void) {
+char *
+get_stack (void)
+{
   word_20 dsktop, dskbot;
   word_20 sp = 0, end = 0, ent = 0;
   word_20 ram_base, ram_mask;
-  char    dat[65536];
-  char    typ[256];
+  char dat[65536];
+  char typ[256];
   int i, n;
 
   ram_base = saturn.mem_cntl[1].config[0];
@@ -1336,40 +1310,42 @@ char * get_stack (void) {
       dskbot = DSKBOT_SX;
     }
 
-  load_addr(&sp, dsktop, 5);
-  load_addr(&end, dskbot, 5);
+  load_addr (&sp, dsktop, 5);
+  load_addr (&end, dskbot, 5);
 
-  n = (end - sp) / 5 - 1;   /* end never matches sp */
+  n = (end - sp) / 5 - 1; /* end never matches sp */
 
-  printf("n = %d\n", n);
+  printf ("n = %d\n", n);
 
-  //TODO Get the top of the stack in the buffer.
-  //TODO create a window and put the complete stack into it!
+  // TODO Get the top of the stack in the buffer.
+  // TODO create a window and put the complete stack into it!
   if (n)
     {
-      load_addr(&ent, sp, 5);
-      decode_rpl_obj_2(ent, typ, dat);
-      printf("%d %ld -> [%s] %s\n", i, ent, typ, dat);
+      load_addr (&ent, sp, 5);
+      decode_rpl_obj_2 (ent, typ, dat);
+      printf ("%d %ld -> [%s] %s\n", i, ent, typ, dat);
     }
 
   for (i = 0; i < n; i++)
     {
-      load_addr(&ent, sp + (5 * i), 5);
-      decode_rpl_obj_2(ent, typ, dat);
-      printf("%d %ld -> [%s] %s\n", i, ent, typ, dat);
+      load_addr (&ent, sp + (5 * i), 5);
+      decode_rpl_obj_2 (ent, typ, dat);
+      printf ("%d %ld -> [%s] %s\n", i, ent, typ, dat);
     }
 
   saturn.mem_cntl[1].config[0] = ram_base;
   saturn.mem_cntl[1].config[1] = ram_mask;
 
-  return 0;			// Bugfix in SDL port
+  return 0; // Bugfix in SDL port
 }
 
-static void do_stack (int argc, char **argv) {
+static void
+do_stack (int argc, char **argv)
+{
   word_20 dsktop, dskbot;
   word_20 sp = 0, end = 0, ent = 0;
   word_20 ram_base, ram_mask;
-  char    buf[65536];
+  char buf[65536];
   struct se *stack, *se;
   int n;
 
@@ -1390,22 +1366,22 @@ static void do_stack (int argc, char **argv) {
       dskbot = DSKBOT_SX;
     }
 
-  load_addr(&sp, dsktop, 5);
-  load_addr(&end, dskbot, 5);
+  load_addr (&sp, dsktop, 5);
+  load_addr (&end, dskbot, 5);
 
   stack = (struct se *)0;
   n = 0;
   do
     {
-      load_addr(&ent, sp, 5);
+      load_addr (&ent, sp, 5);
       if (ent == 0)
         break;
       n++;
       sp += 5;
-      se = (struct se *)malloc(sizeof(struct se));
+      se = (struct se *)malloc (sizeof (struct se));
       if (se == 0)
         {
-          fprintf(stderr, "Out off memory.\n");
+          fprintf (stderr, "Out off memory.\n");
           break;
         }
       se->se_n = n;
@@ -1416,19 +1392,19 @@ static void do_stack (int argc, char **argv) {
   while (sp <= end);
 
   if (n == 0)
-    printf("Empty stack.\n");
+    printf ("Empty stack.\n");
 
   se = stack;
   while (se)
     {
-      decode_rpl_obj(se->se_p, buf);
+      decode_rpl_obj (se->se_p, buf);
       if (se->se_n != 1)
-        if (strlen(buf) > 63)
+        if (strlen (buf) > 63)
           {
-            sprintf(&buf[60], "...");
+            sprintf (&buf[60], "...");
             buf[63] = '\0';
           }
-      printf("%5d: %.5lX -> %s\n", se->se_n, se->se_p, buf);
+      printf ("%5d: %.5lX -> %s\n", se->se_n, se->se_p, buf);
       se = se->se_next;
     }
 
@@ -1437,20 +1413,24 @@ static void do_stack (int argc, char **argv) {
     {
       stack = se;
       se = se->se_next;
-      free(stack);
+      free (stack);
     }
 
   saturn.mem_cntl[1].config[0] = ram_base;
   saturn.mem_cntl[1].config[1] = ram_mask;
 }
 
-static void do_stat (int argc, char **argv) {
+static void
+do_stat (int argc, char **argv)
+{
   printf ("Instructions/s: %ld\n", saturn.i_per_s);
   printf ("Timer 1 I/TICK: %d\n", saturn.t1_tick);
   printf ("Timer 2 I/TICK: %d\n", saturn.t2_tick);
 }
 
-static void do_step (int argc, char **argv) {
+static void
+do_step (int argc, char **argv)
+{
   word_20 next_instr;
   word_32 n;
   int leave;
@@ -1475,10 +1455,10 @@ static void do_step (int argc, char **argv) {
   if (exec_flags & EXEC_BKPT)
     {
       if (check_breakpoint (BP_EXEC, saturn.PC))
-  {
-    enter_debugger |= BREAKPOINT_HIT;
-    return;
-  }
+        {
+          enter_debugger |= BREAKPOINT_HIT;
+          return;
+        }
     }
 
   next_instr = saturn.PC;
@@ -1490,37 +1470,39 @@ static void do_step (int argc, char **argv) {
   while (1)
     {
       if (enter_debugger)
-  break;
+        break;
 
       leave = 0;
 
       if (saturn.PC == next_instr)
-  {
-    n--;
-    leave = 1;
-    if (n == 0)
-      break;
-  }
+        {
+          n--;
+          leave = 1;
+          if (n == 0)
+            break;
+        }
 
       step_instruction ();
 
       if (exec_flags & EXEC_BKPT)
-  {
-    if (check_breakpoint (BP_EXEC, saturn.PC))
-      {
-        enter_debugger |= BREAKPOINT_HIT;
-        break;
-      }
-  }
+        {
+          if (check_breakpoint (BP_EXEC, saturn.PC))
+            {
+              enter_debugger |= BREAKPOINT_HIT;
+              break;
+            }
+        }
 
       if (leave)
-  next_instr = saturn.PC;
+        next_instr = saturn.PC;
 
       schedule ();
     }
 }
 
-static void do_reset (int argc, char **argv) {
+static void
+do_reset (int argc, char **argv)
+{
   if (confirm ("Do a RESET (PC = 00000)?"))
     {
       saturn.PC = 0;
@@ -1528,7 +1510,9 @@ static void do_reset (int argc, char **argv) {
     }
 }
 
-static void do_rstk (int argc, char **argv) {
+static void
+do_rstk (int argc, char **argv)
+{
   int i, j;
 
   disassemble (saturn.PC, instr);
@@ -1541,23 +1525,25 @@ static void do_rstk (int argc, char **argv) {
     {
       j = 0;
       for (i = saturn.rstkp; i >= 0; i--)
-  {
-    disassemble (saturn.rstk[i], instr);
-    printf ("%2d: %.5lX: %s\n", j, saturn.rstk[i], instr);
-    j++;
-  }
+        {
+          disassemble (saturn.rstk[i], instr);
+          printf ("%2d: %.5lX: %s\n", j, saturn.rstk[i], instr);
+          j++;
+        }
     }
 }
 
-int debug (void) {
+int
+debug (void)
+{
   t1_t2_ticks ticks;
   struct cmd *cmdp;
   char *cp;
   int argc;
   char *argv[MAX_ARGS];
   char *rl = NULL;
-  static char *cl = (char *) 0;
-  static char *old_line = (char *) 0;
+  static char *cl = (char *)0;
+  static char *old_line = (char *)0;
   int i;
 
   /*
@@ -1575,15 +1561,15 @@ int debug (void) {
       if (enter_debugger & USER_INTERRUPT)
         if (verbose)
           printf ("%s: user interrupt (SIGINT) ignored\n", progname);
-        exit_x48(1);
+      exit_x48 (1);
       if (enter_debugger & BREAKPOINT_HIT)
         if (verbose)
-          printf ("%s: breakpoint hit at 0x%.5lX ignored\n",
-                  progname, saturn.PC);
+          printf ("%s: breakpoint hit at 0x%.5lX ignored\n", progname,
+                  saturn.PC);
       if (enter_debugger & TRAP_INSTRUCTION)
         if (verbose)
-          printf ("%s: trap instruction at 0x%.5lX ignored\n",
-                  progname, saturn.PC);
+          printf ("%s: trap instruction at 0x%.5lX ignored\n", progname,
+                  saturn.PC);
       enter_debugger = 0;
       return 0;
     }
@@ -1607,14 +1593,14 @@ int debug (void) {
 
   if (enter_debugger & ILLEGAL_INSTRUCTION)
     {
-      printf ("ILLEGAL INSTRUCTION at %.5lX : %s\n",
-        saturn.PC, str_nibbles (saturn.PC, 16));
+      printf ("ILLEGAL INSTRUCTION at %.5lX : %s\n", saturn.PC,
+              str_nibbles (saturn.PC, 16));
     }
 
   if (enter_debugger & TRAP_INSTRUCTION)
     {
-      printf ("TRAP at %.5lX : %s\n",
-        saturn.PC - 5, str_nibbles (saturn.PC - 5, 16));
+      printf ("TRAP at %.5lX : %s\n", saturn.PC - 5,
+              str_nibbles (saturn.PC - 5, 16));
       enter_debugger &= ~TRAP_INSTRUCTION;
     }
 
@@ -1632,79 +1618,78 @@ int debug (void) {
        */
       rl = readline ("x48-debug> ");
 
-      if (rl == (char *) 0)
-  {
-    continue_flag = 1;
-    continue;
-  }
+      if (rl == (char *)0)
+        {
+          continue_flag = 1;
+          continue;
+        }
       if (*rl == '\0')
-  {
-    free (rl);
-          rl = (char *) 0;
-    if (cl)
+        {
+          free (rl);
+          rl = (char *)0;
+          if (cl)
             {
-        free (cl);
-              cl = (char *) 0;
+              free (cl);
+              cl = (char *)0;
             }
-    cl = strdup (old_line == NULL ? "(null)" : old_line);
-  }
+          cl = strdup (old_line == NULL ? "(null)" : old_line);
+        }
       else
-  {
-    if (cl)
-      {
-        free (cl);
-              cl = (char *) 0;
-      }
-    if (old_line)
-      {
-        free (old_line);
-              old_line = (char *) 0;
-      }
-    cl = strdup (rl);
-    old_line = strdup (rl);
+        {
+          if (cl)
+            {
+              free (cl);
+              cl = (char *)0;
+            }
+          if (old_line)
+            {
+              free (old_line);
+              old_line = (char *)0;
+            }
+          cl = strdup (rl);
+          old_line = strdup (rl);
 #ifdef HAVE_READLINE
-    add_history (rl);
+          add_history (rl);
 #endif
-    free (rl);
-          rl = (char *) 0;
-  }
+          free (rl);
+          rl = (char *)0;
+        }
 
       /*
        * decode the commandline
        */
       cp = strtok (cl, " \t");
       for (cmdp = cmd_tbl; cmdp->name; cmdp++)
-  {
-    if (strcmp (cp, cmdp->name) == 0)
-      {
-        break;
-      }
-  }
+        {
+          if (strcmp (cp, cmdp->name) == 0)
+            {
+              break;
+            }
+        }
 
       argc = 0;
       argv[argc++] = cp;
-      while ((cp = strtok ((char *) 0, " \t")) != (char *) 0)
-  {
-    argv[argc++] = cp;
-    if (argc == MAX_ARGS)
-      break;
-  }
+      while ((cp = strtok ((char *)0, " \t")) != (char *)0)
+        {
+          argv[argc++] = cp;
+          if (argc == MAX_ARGS)
+            break;
+        }
       for (i = argc; i < MAX_ARGS; i++)
-  argv[i] = (char *) NULL;
+        argv[i] = (char *)NULL;
 
       /*
        * execute the command, if valid
        */
       if (cmdp->func)
-  {
-    (*cmdp->func) (argc, argv);
-  }
+        {
+          (*cmdp->func) (argc, argv);
+        }
       else
-  {
-    printf ("Undefined command \"%s\". Try \"help\".\n", argv[0]);
-  }
+        {
+          printf ("Undefined command \"%s\". Try \"help\".\n", argv[0]);
+        }
       in_debugger = 0;
-
     }
   while (!continue_flag);
 
@@ -1730,7 +1715,7 @@ int debug (void) {
   stop_timer (IDLE_TIMER);
   start_timer (RUN_TIMER);
 
-  set_accesstime();
+  set_accesstime ();
 
   if (enter_debugger & ILLEGAL_INSTRUCTION)
     {
@@ -1754,26 +1739,27 @@ int debug (void) {
   return 0;
 }
 
-int emulate_debug (void) {
+int
+emulate_debug (void)
+{
   do
     {
 
       step_instruction ();
 
       if (exec_flags & EXEC_BKPT)
-  {
-    if (check_breakpoint (BP_EXEC, saturn.PC))
-      {
-        enter_debugger |= BREAKPOINT_HIT;
-        break;
-      }
-  }
+        {
+          if (check_breakpoint (BP_EXEC, saturn.PC))
+            {
+              enter_debugger |= BREAKPOINT_HIT;
+              break;
+            }
+        }
 
       if (schedule_event-- == 0)
-  {
-    schedule ();
-  }
-
+        {
+          schedule ();
+        }
     }
   while (!enter_debugger);
 
