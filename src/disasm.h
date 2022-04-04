@@ -1,11 +1,11 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+        SDL port of x48
+        Copyright (C) 2011-2012 Daniel Roggen
+        Revision 1.0
 */
 /*
-	Main changes in SDL port:
-	- all char * changed to const char *
+        Main changes in SDL port:
+        - all char * changed to const char *
 */
 /*
  *  This file is part of x48, an emulator of the HP-48sx Calculator.
@@ -49,12 +49,12 @@
 #include "global.h"
 #include "hp48.h"
 
-#define HP_MNEMONICS            0
-#define CLASS_MNEMONICS		1
+#define HP_MNEMONICS 0
+#define CLASS_MNEMONICS 1
 
 extern int disassembler_mode;
 extern const char *mode_name[];
 
-extern word_20 disassemble(word_20 addr, char *out);
+extern word_20 disassemble (word_20 addr, char *out);
 
 #endif /* !_DISASM_H */

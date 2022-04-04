@@ -52,23 +52,24 @@
 
 #include "global.h"
 
-#define DISP_INSTR_OFF   0x10
+#define DISP_INSTR_OFF 0x10
 
-#define ANN_LEFT         0x81
-#define ANN_RIGHT        0x82
-#define ANN_ALPHA        0x84
-#define ANN_BATTERY      0x88
-#define ANN_BUSY         0x90
-#define ANN_IO           0xa0
+#define ANN_LEFT 0x81
+#define ANN_RIGHT 0x82
+#define ANN_ALPHA 0x84
+#define ANN_BATTERY 0x88
+#define ANN_BUSY 0x90
+#define ANN_IO 0xa0
 
-typedef struct device_t {
+typedef struct device_t
+{
 
-  int  display_touched;
+  int display_touched;
 
   char contrast_touched;
 
   char disp_test_touched;
- 
+
   char crc_touched;
 
   char power_status_touched;
@@ -77,7 +78,7 @@ typedef struct device_t {
   char mode_touched;
 
   char ann_touched;
- 
+
   char baud_touched;
 
   char card_ctrl_touched;
@@ -102,7 +103,7 @@ typedef struct device_t {
 
   char scratch_touched;
   char base_nibble_touched;
-  
+
   char unknown_touched;
 
   char t1_ctrl_touched;
@@ -116,16 +117,16 @@ typedef struct device_t {
 } device_t;
 
 extern device_t device;
-extern void	check_devices     (void);
+extern void check_devices (void);
 #if 0
 extern void	check_out_register(void);
 #endif
 
-extern void     update_display    (void);
-extern void     redraw_display    (void);
-extern void 	disp_draw_nibble  (word_20 addr, word_4 val);
-extern void 	menu_draw_nibble  (word_20 addr, word_4 val);
-extern void     draw_annunc	  (void);
-extern void     redraw_annunc	  (void);
+extern void update_display (void);
+extern void redraw_display (void);
+extern void disp_draw_nibble (word_20 addr, word_4 val);
+extern void menu_draw_nibble (word_20 addr, word_4 val);
+extern void draw_annunc (void);
+extern void redraw_annunc (void);
 
 #endif /* !_DEVICE_H */

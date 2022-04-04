@@ -1,11 +1,12 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+        SDL port of x48
+        Copyright (C) 2011-2012 Daniel Roggen
+        Revision 1.0
 */
 /*
-	Main changes in SDL port:
-	- changed append_str(char *buf, char *str) to append_str(char *buf, const char *str)
+        Main changes in SDL port:
+        - changed append_str(char *buf, char *str) to append_str(char *buf,
+   const char *str)
 */
 
 /*
@@ -48,8 +49,8 @@
 
 #include "global.h"
 
-extern char *	append_str(char *buf, const char *string);
-extern char *	append_tab(char *buf);
-extern char *	append_tab_16(char *buf);
+extern char *append_str (char *buf, const char *string);
+extern char *append_tab (char *buf);
+extern char *append_tab_16 (char *buf);
 
 #endif /* !_APPEND_H */

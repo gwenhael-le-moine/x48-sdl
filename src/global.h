@@ -56,10 +56,10 @@
 #if defined(linux)
 
 #ifndef LINUX
-#define LINUX	1
+#define LINUX 1
 #endif
 
 #define SYSV_TIME 1
-#endif	/* Not Linux */
+#endif /* Not Linux */
 
 #endif /* !_GLOBAL_H */

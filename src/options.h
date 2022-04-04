@@ -1,7 +1,7 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+        SDL port of x48
+        Copyright (C) 2011-2012 Daniel Roggen
+        Revision 1.0
 */
 /*
  *  This file is part of x48, an emulator of the HP-48sx Calculator.
@@ -49,7 +49,5 @@
 #define _OPTIONS_H 1
 
 #include "global.h"
-
-
 
 #endif /* _OPTIONS_H */

@@ -1,7 +1,7 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+        SDL port of x48
+        Copyright (C) 2011-2012 Daniel Roggen
+        Revision 1.0
 */
 
 /*
@@ -44,24 +44,24 @@
 
 #include "global.h"
 
-extern int     verbose;
-extern int     quiet;
-extern int     useTerminal;
-extern int     useSerial;
-extern int     useXShm;
-extern int     useDebugger;
-extern int     netbook;
-extern int     throttle;
-extern char   serialLine[];
-extern int     initialize;
-extern int     resetOnStartup;
-extern char   romFileName[];
-extern char   homeDirectory[];
+extern int verbose;
+extern int quiet;
+extern int useTerminal;
+extern int useSerial;
+extern int useXShm;
+extern int useDebugger;
+extern int netbook;
+extern int throttle;
+extern char serialLine[];
+extern int initialize;
+extern int resetOnStartup;
+extern char romFileName[];
+extern char homeDirectory[];
 
-extern char   *progname;
-extern char   *res_name;
-extern char   *res_class;
+extern char *progname;
+extern char *res_name;
+extern char *res_class;
 
-void get_resources();
+void get_resources ();
 
 #endif /* !_RESOURCES_H */
