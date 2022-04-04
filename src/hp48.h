@@ -1,11 +1,11 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+  SDL port of x48
+  Copyright (C) 2011-2012 Daniel Roggen
+  Revision 1.0
 */
 /*
-	Main changes in SDL port:
-	- changed saturn_t.bank_switch from short to word_16
+  Main changes in SDL port:
+  - changed saturn_t.bank_switch from short to word_16
 */
 
 
@@ -79,7 +79,7 @@
 #include <sys/time.h>
 
 #include "mmu.h"
-#ifdef HAVE_STDINT_H 
+#ifdef HAVE_STDINT_H
 # include <stdint.h>
 #endif
 
@@ -110,10 +110,10 @@ typedef unsigned char  word_4;
 typedef unsigned char  word_8;
 typedef unsigned short word_12;
 typedef unsigned short word_16;
-typedef long	       word_20;
-typedef long	       word_32;
+typedef long         word_20;
+typedef long         word_32;
 
-#ifdef HAVE_STDINT_H 
+#ifdef HAVE_STDINT_H
 #define SIMPLE_64
 typedef int64_t word_64;
 #else
@@ -260,7 +260,7 @@ typedef struct saturn_t {
 
 #define NIBBLES_PER_ROW 0x22
 
-#define DISP_ROWS	       64
+#define DISP_ROWS        64
 #define NIBS_PER_BUFFER_ROW    (NIBBLES_PER_ROW + 2)
 
 extern unsigned char disp_buf[DISP_ROWS][NIBS_PER_BUFFER_ROW];
@@ -301,7 +301,8 @@ extern int		(*read_nibble) __ProtoType__((long addr));
 extern int		(*read_nibble_crc) __ProtoType__((long addr));
 
 extern int		emulate	__ProtoType__((void));
-extern int		step_instruction __ProtoType__((void));
+/* extern int		step_instruction __ProtoType__((void)); */
+extern int		step_instruction (void);
 extern void		schedule __ProtoType__((void));
 
 extern int              read_rom __ProtoType__((const char *fname));
@@ -309,5 +310,5 @@ extern int              read_files __ProtoType__((void));
 extern int              write_files __ProtoType__((void));
 
 extern void		load_addr __ProtoType__((word_20 *dat, long addr,
-						 int n));
+             int n));
 #endif /* !_HP48_H */

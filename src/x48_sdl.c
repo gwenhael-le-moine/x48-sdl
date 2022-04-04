@@ -99,7 +99,7 @@
 
 
 // SDL.h must be included before resources.h, which otherwise redefines functions islower and isupper.
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include "SDL_gfxPrimitives.h"
 #include "SDL_rotozoom.h"
 

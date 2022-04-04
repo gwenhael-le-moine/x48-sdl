@@ -1,11 +1,11 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+  SDL port of x48
+  Copyright (C) 2011-2012 Daniel Roggen
+  Revision 1.0
 */
 /*
-	Main changes in SDL port:
-	- handling of timezone for cygwin 
+  Main changes in SDL port:
+  - handling of timezone for cygwin
 */
 
 /*
@@ -137,13 +137,13 @@ set_accesstime()
 #ifndef SOLARIS
   struct timezone tz;
 #endif
-  word_64	  ticks, timeout, timer2;
-  word_20	  accesstime_loc, timeout_loc;
-  word_20	  accesscrc_loc, timeoutclk_loc;
-  word_16	  crc;
-  word_4	  val;
-  int		  i;
-  time_t	  gmt;
+  word_64   ticks, timeout, timer2;
+  word_20   accesstime_loc, timeout_loc;
+  word_20   accesscrc_loc, timeoutclk_loc;
+  word_16   crc;
+  word_4    val;
+  int     i;
+  time_t    gmt;
   struct tm	 *ltm;
 
 printf("***set_accesstime***\n");
@@ -154,8 +154,8 @@ printf("***set_accesstime***\n");
   (void)time(&gmt);
   ltm = localtime(&gmt);
 #if defined(PLATFORM_MINGW)
-	// SDL Port cygwin: use _timezone to get the timezone offset
-	systime_offset += _timezone;
+  // SDL Port cygwin: use _timezone to get the timezone offset
+  systime_offset += timezone;
 #else
 #if defined(SYSV_TIME) || defined(__sgi)
   systime_offset = timezone;
@@ -165,7 +165,7 @@ printf("***set_accesstime***\n");
   systime_offset = -ltm->tm_gmtoff;
 #endif
 #endif
-	
+
 
 #ifdef SOLARIS
   gettimeofday(&tv);
@@ -444,12 +444,12 @@ get_t1_t2()
   struct timezone tz;
 #endif
   word_64         stop;
-  t1_t2_ticks	  ticks;
-  word_64	  access_time;
-  word_64	  adj_time;
-  word_64	  diff_time;
-  word_64	  delta;
-  word_20	  accesstime_loc;
+  t1_t2_ticks   ticks;
+  word_64   access_time;
+  word_64   adj_time;
+  word_64   diff_time;
+  word_64   delta;
+  word_20   accesstime_loc;
   int             i;
 
 #ifdef SOLARIS
@@ -463,19 +463,19 @@ get_t1_t2()
     {
       stop = (tv.tv_sec << 9);
       stop += (tv.tv_usec / 15625) >> 3;
-      if (timers[T1_TIMER].start <=  stop) 
+      if (timers[T1_TIMER].start <=  stop)
         {
           timers[T1_TIMER].value += stop - timers[T1_TIMER].start;
         } else {
-	  fprintf(stderr, "clock running backwards\n");
-	}
+    fprintf(stderr, "clock running backwards\n");
+  }
     }
   ticks.t1_ticks = timers[T1_TIMER].value;
 
   stop = tv.tv_sec;
   stop <<= 13;
   stop += (tv.tv_usec << 7) / 15625;
-  
+
   stop += time_offset;
 
   accesstime_loc = opt_gx ? ACCESSTIME_GX : ACCESSTIME_SX;
@@ -529,7 +529,7 @@ get_t1_t2()
       set_0_time += adj_time;
       time_offset += adj_time;
       access_time -= adj_time;
-  
+
 #ifdef DEBUG_TIMER_ADJUST
       fprintf(stderr, "Time adjusted by ");
       fprintf(stderr, "%lX", adj_time);
@@ -559,4 +559,3 @@ get_t1_t2()
 
   return ticks;
 }
-

@@ -54,7 +54,7 @@ int *size;
   unsigned char four[4];
   int i, j;
 
-	printf("read_rom_file: %s\n",name);
+  printf("read_rom_file: %s\n",name);
 
   *mem = NULL;
   *size = 0;
@@ -88,14 +88,14 @@ int *size;
     {
       *size = 2 * st.st_size;
     }
-  else if (four[1] = 0x49)
+  else if (four[1] == 0x49)
     {
       fprintf(stderr, "%s is an HP49 ROM\n", name);
       *size = 2 * st.st_size;
     }
   else if (four[0])
     {
-      printf("%d\n", st.st_size);
+      printf("%ld\n", st.st_size);
       *size = st.st_size;
     }
   else
@@ -182,7 +182,7 @@ int *size;
               (*mem)[j++] = tmp_mem[i] & 0xf;
               (*mem)[j++] = (tmp_mem[i] >> 4) & 0xf;
             }
-    
+
           free(tmp_mem);
         }
     }
@@ -199,20 +199,20 @@ int *size;
       if (*size == 4 * ROM_SIZE_GX)
         {
           fprintf(stderr, "%s seems to be HP49 ROM, but size is 0x%x\n",
-		  name, *size);
+      name, *size);
           opt_gx = 2;
         }
       else
       if (*size == 8 * ROM_SIZE_GX)
         {
           fprintf(stderr, "%s seems to be HP49 ROM, but size is 0x%x\n",
-		  name, *size);
+      name, *size);
           opt_gx = 2;
         }
       else
         {
           fprintf(stderr, "%s seems to be G/GX ROM, but size is 0x%x\n",
-		  name, *size);
+      name, *size);
           free(*mem);
           *mem = NULL;
           *size = 0;
@@ -228,7 +228,7 @@ int *size;
       else
         {
           fprintf(stderr, "%s seems to be S/SX ROM, but size is 0x%x\n",
-		  name, *size);
+      name, *size);
           free(*mem);
           *mem = NULL;
           *size = 0;
@@ -241,4 +241,3 @@ int *size;
 
   return 1;
 }
-

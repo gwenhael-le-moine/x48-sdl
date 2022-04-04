@@ -74,7 +74,7 @@
 #include "global.h"
 
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 
 // Colors
 #define WHITE		0

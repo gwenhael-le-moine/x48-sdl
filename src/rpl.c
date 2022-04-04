@@ -56,41 +56,41 @@ struct objfunc {
   char    *name;
   short    length;
   word_20  prolog;
-  char	  *(*func) __ProtoType__((word_20 *addr, char *string));
+  char    *(*func) __ProtoType__((word_20 *addr, char *string));
 } objects[] = {
-  { "System Binary",	0,	DOBINT,		dec_bin_int },
-  { "Real",		0,	DOREAL,		dec_real },
-  { "Long Real",	0,	DOEREL,		dec_long_real },
-  { "Complex",		0,	DOCMP,		dec_complex },
-  { "Long Complex",	0,	DOECMP,		dec_long_complex },
-  { "Character",	0,	DOCHAR,		dec_char },
-  { "Array",		0,	DOARRY,		dec_array },
-  { "Linked Array",	0,	DOLNKARRY,	dec_lnk_array },
-  { "String",		2,	DOCSTR,		dec_string },
-  { "Hex String",	1,	DOHSTR,		dec_hex_string },
-  { "List",		0,	DOLIST,		dec_list },
-  { "Directory",	0,	DORRP,		skip_ob },
-  { "Symbolic",		0,	DOSYMB,		dec_symb },
-  { "Unit",		0,	DOEXT,		dec_unit },
-  { "Tagged",		0,	DOTAG,		skip_ob },
-  { "Graphic",		0,	DOGROB,		skip_ob },
-  { "Library",		0,	DOLIB,		dec_library },
-  { "Backup",		0,	DOBAK,		skip_ob },
-  { "Library Data",	0,	DOEXT0,		dec_library_data },
-  { "ACPTR",		0,	DOACPTR,	dec_acptr },
-  { "External 2",	0,	DOEXT2,		skip_ob },
-  { "External 3",	0,	DOEXT3,		skip_ob },
-  { "External 4",	0,	DOEXT4,		skip_ob },
-  { "Program",		0,	DOCOL,		dec_prog },
-  { "Code",		1,	DOCODE,		dec_code },
-  { "Global Ident",	0,	DOIDNT,		dec_global_ident },
-  { "Local Ident",	0,	DOLAM,		dec_local_ident },
-  { "XLib Name",	0,	DOROMP,		dec_xlib_name },
-  { "*",		0,	UM_MUL,		dec_unit_op },
-  { "/",		0,	UM_DIV,		dec_unit_op },
-  { "^",		0,	UM_POW,		dec_unit_op },
-  { " ",		0,	UM_PRE,		dec_unit_op },
-  { "_",		0,	UM_END,		dec_unit_op },
+  { (char*)"System Binary",	0,	DOBINT,		dec_bin_int },
+  { (char*)"Real",		0,	DOREAL,		dec_real },
+  { (char*)"Long Real",	0,	DOEREL,		dec_long_real },
+  { (char*)"Complex",		0,	DOCMP,		dec_complex },
+  { (char*)"Long Complex",	0,	DOECMP,		dec_long_complex },
+  { (char*)"Character",	0,	DOCHAR,		dec_char },
+  { (char*)"Array",		0,	DOARRY,		dec_array },
+  { (char*)"Linked Array",	0,	DOLNKARRY,	dec_lnk_array },
+  { (char*)"String",		2,	DOCSTR,		dec_string },
+  { (char*)"Hex String",	1,	DOHSTR,		dec_hex_string },
+  { (char*)"List",		0,	DOLIST,		dec_list },
+  { (char*)"Directory",	0,	DORRP,		skip_ob },
+  { (char*)"Symbolic",		0,	DOSYMB,		dec_symb },
+  { (char*)"Unit",		0,	DOEXT,		dec_unit },
+  { (char*)"Tagged",		0,	DOTAG,		skip_ob },
+  { (char*)"Graphic",		0,	DOGROB,		skip_ob },
+  { (char*)"Library",		0,	DOLIB,		dec_library },
+  { (char*)"Backup",		0,	DOBAK,		skip_ob },
+  { (char*)"Library Data",	0,	DOEXT0,		dec_library_data },
+  { (char*)"ACPTR",		0,	DOACPTR,	dec_acptr },
+  { (char*)"External 2",	0,	DOEXT2,		skip_ob },
+  { (char*)"External 3",	0,	DOEXT3,		skip_ob },
+  { (char*)"External 4",	0,	DOEXT4,		skip_ob },
+  { (char*)"Program",		0,	DOCOL,		dec_prog },
+  { (char*)"Code",		1,	DOCODE,		dec_code },
+  { (char*)"Global Ident",	0,	DOIDNT,		dec_global_ident },
+  { (char*)"Local Ident",	0,	DOLAM,		dec_local_ident },
+  { (char*)"XLib Name",	0,	DOROMP,		dec_xlib_name },
+  { (char*)"*",		0,	UM_MUL,		dec_unit_op },
+  { (char*)"/",		0,	UM_DIV,		dec_unit_op },
+  { (char*)"^",		0,	UM_POW,		dec_unit_op },
+  { (char*)" (char*)",		0,	UM_PRE,		dec_unit_op },
+  { (char*)"_",		0,	UM_END,		dec_unit_op },
   { 0, 0, 0 }
 };
 
@@ -411,11 +411,12 @@ char    *string;
       for (i = len - 1; i >= 0; i--)
         {
           *p = hex[read_nibble(*addr + i)];
-          if (lead)
+          if (lead) {
             if ((i != 0) && (*p == '0'))
               p--;
             else
               lead = 0;
+          }
           p++;
         }
 
@@ -916,29 +917,29 @@ char *string;
                */
               lib_addr += offset;
 
-	      /*
-	       * check if library is in ROM
+        /*
+         * check if library is in ROM
                */
               if (!opt_gx)
                 if (lib_addr < 0x70000)
                   saturn.mem_cntl[1].config[0] = 0xf0000;
 
-	      /*
-	       * check pointer type
+        /*
+         * check pointer type
                */
               type = read_nibbles(lib_addr, 5);
               if (type == DOBINT)
                 {
-		  /*
-		   * follow pointer to real address
+      /*
+       * follow pointer to real address
                    */
                   lib_addr += 5;
                   lib_addr = read_nibbles(lib_addr, 5);
                 }
               else if (type == DOACPTR)
                 {
-		  /*
-		   * follow pointer to real address
+      /*
+       * follow pointer to real address
                    */
                   lib_addr += 5;
                   acptr = lib_addr + 5;
@@ -961,8 +962,8 @@ char *string;
               hash_end = read_nibbles(lib_addr, 5);
               hash_end += lib_addr;
 
-	      /*
-	       * go into real name table
+        /*
+         * go into real name table
                */
               lib_addr += 85;
               offset = read_nibbles(lib_addr, 5);
@@ -1047,7 +1048,7 @@ short    lnk_flag;
   word_20  len, type, dim;
   word_20 *dim_lens, *dims;
   word_20  array_addr, elem_addr;
-  long	   elems;
+  long     elems;
   int      d, i;
   char    *p = string;
   struct objfunc *op;
@@ -1281,21 +1282,21 @@ fflush(stderr);
 fprintf(stderr, "Link table addr = %.5lx\n", lib_addr);
 fflush(stderr);
 */
-	      /*
-	       * check if library is in ROM
+        /*
+         * check if library is in ROM
                */
               if (!opt_gx)
                 if (lib_addr < 0x70000)
                   saturn.mem_cntl[1].config[0] = 0xf0000;
 
-	      /*
-	       * check pointer type
+        /*
+         * check pointer type
                */
               type = read_nibbles(lib_addr, 5);
               if (type == DOBINT)
                 {
-		  /*
-		   * follow pointer to real address
+      /*
+       * follow pointer to real address
                    */
                   lib_addr += 5;
                   lib_addr = read_nibbles(lib_addr, 5);
@@ -1362,10 +1363,10 @@ word_20 *addr;
 char    *string;
 #endif
 {
-  word_20	  prolog = 0;
-  word_20	  prolog_2;
+  word_20   prolog = 0;
+  word_20   prolog_2;
   char           *p = string;
-  char		  tmp_str[80];
+  char      tmp_str[80];
   struct objfunc *op;
 
   prolog = read_nibbles(*addr, 5);
@@ -1415,9 +1416,9 @@ char    *typ;
 char    *dat;
 #endif
 {
-  word_20	  prolog = 0;
+  word_20   prolog = 0;
   int             len;
-  char		  tmp_str[80];
+  char      tmp_str[80];
   struct objfunc *op;
 
   typ[0] = '\0';
@@ -1457,7 +1458,7 @@ char    *dat;
         {
           append_str(typ, "XLib Call");
           append_str(dat, tmp_str);
-	  return;
+    return;
         }
     }
 
@@ -1486,10 +1487,10 @@ word_20  addr;
 char    *buf;
 #endif
 {
-  word_20	  prolog = 0;
+  word_20   prolog = 0;
   int             len;
   char           *p = buf;
-  char		  tmp_str[80];
+  char      tmp_str[80];
   struct objfunc *op;
 
   prolog = read_nibbles(addr, 5);
@@ -1534,7 +1535,7 @@ char    *buf;
           p = append_str(buf, "XLib Call");
           p = append_tab_16(buf);
           p = append_str(p, tmp_str);
-	  return p;
+    return p;
         }
     }
 
@@ -1553,4 +1554,3 @@ char    *buf;
 
   return p;
 }
-

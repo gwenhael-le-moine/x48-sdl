@@ -61,6 +61,8 @@ extern void	init_debugger	__ProtoType__((void));
 extern int	debug		__ProtoType__((void));
 extern int	emulate_debug	__ProtoType__((void));
 
+extern int	step_instruction __ProtoType__((void));
+
 extern char    *str_nibbles	__ProtoType__((word_20 addr, int n));
 
 #endif /* !_DEBUGGER_H */

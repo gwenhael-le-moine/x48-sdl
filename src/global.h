@@ -1,7 +1,7 @@
 /*
-	SDL port of x48
-	Copyright (C) 2011-2012 Daniel Roggen
-	Revision 1.0
+        SDL port of x48
+        Copyright (C) 2011-2012 Daniel Roggen
+        Revision 1.0
 */
 /*
  *  This file is part of x48, an emulator of the HP-48sx Calculator.
@@ -50,25 +50,25 @@
 
 #include "config.h"
 
-#ifdef __ProtoType__
-#undef __ProtoType__
-#endif
+/* #ifdef __ProtoType__ */
+/* #undef __ProtoType__ */
+/* #endif */
 
-#ifdef __FunctionProto__
-#undef __FunctionProto__
-#endif
+/* #ifdef __FunctionProto__ */
+/* #undef __FunctionProto__ */
+/* #endif */
 
 
-#if defined(__STDC__) || defined(__cplusplus)
+/* #if defined(__STDC__) || defined(__cplusplus) */
 #define __ProtoType__(x) x
 #define __FunctionProto__ 1
-#else
-#define __ProtoType__(x) ()
-#undef __FunctionProto__
-#endif
+/* #else */
+/* #define __ProtoType__(x) () */
+/* #undef __FunctionProto__ */
+/* #endif */
 
 #if !defined(__GNUC__) || defined(__STRICT_ANSI__)
-#define inline 
+#define inline
 #if !defined(__STDC__)
 #define const
 #endif
@@ -127,7 +127,7 @@
 #else
 #define HAVE_STDIO 1
 #endif
- 
+
 #ifndef HAVE_STDIO
 #include <stdio.h>
 #include <sys/time.h>
@@ -149,5 +149,6 @@ extern int      setitimer	__ProtoType__((int, struct itimerval *,
                                                struct itimerval *));
 extern int	gethostname	__ProtoType__((char *, int));
 #endif
-
+extern int		step_instruction (void);
+extern int decode_8_thru_f(int op1);
 #endif /* !_GLOBAL_H */
