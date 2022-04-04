@@ -10,13 +10,13 @@ x48: mainsdl.o actions.o debugger.o device.o disasm.o emulate.o errors.o init.o 
 	$(CC) $(CFLAGS) $(LIBS) *.o -o x48
 
 mkcard: mkcard.c
-	$(CC) $(CFLAGS) $(LIBS) $? -o $@
+	$(CC) $(CFLAGS) $(LIBS) $^ -o $@
 
 checkrom: checkrom.c romio.o
-	$(CC) $(CFLAGS) $(LIBS) $? -o $@
+	$(CC) $(CFLAGS) $(LIBS) $^ -o $@
 
 dump2rom: dump2rom.c
-	$(CC) $(CFLAGS) $(LIBS) $? -o $@
+	$(CC) $(CFLAGS) $(LIBS) $^ -o $@
 
 clean:
 	rm -f *.o
@@ -25,7 +25,7 @@ clean-all: clean
 	rm -f x48 mkcard checkrom dump2rom
 
 # %.o: %.c %.d
-#	$(CC) $(CFLAGS) -c -o $@ $<
+#	$(CC) $(CFLAGS) -c -o $@ $^
 
 mainsdl.o: mainsdl.c x48_sdl.h global.h config.h hp48.h mmu.h debugger.h resources.h
 	$(CC) $(CFLAGS) -c $< -o mainsdl.o

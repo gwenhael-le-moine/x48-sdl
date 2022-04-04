@@ -707,7 +707,7 @@ decode_group_1()
   }
 }
 
-inline int decode_8_thru_f(int op1)
+static inline int decode_8_thru_f(int op1)
 {
   int op2, op3, op4, op5, op6;
 
